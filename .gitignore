@@ -1,0 +1,11 @@
+# Fichiers construits (l'APK est publié dans les Releases GitHub)
+build/
+*.apk
+*.idsig
+
+# Clé de signature : secret, à garder uniquement en local
+*.jks
+*.keystore
+
+# Aperçus générés par icone.ps1 (les images du README sont dans docs/)
+apercu-*.png

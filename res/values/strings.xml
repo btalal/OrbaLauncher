@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="service_nom">Touche Accueil → Orba</string>
+    <string name="service_resume">Orba devient l\'écran d\'accueil. Appui long sur Accueil : accueil Google.</string>
+    <string name="service_description">Ce service fait d\'Orba l\'écran d\'accueil de la télé. Touche Accueil, appui court : Orba. Appui long : accueil Google TV. Quand l\'accueil Google s\'affiche tout seul (allumage, sortie d\'une appli), il est remplacé par Orba. Le service voit seulement la touche Accueil et le nom de l\'appli affichée. Il ne lit pas le contenu de l\'écran et n\'enregistre rien.</string>
+</resources>
