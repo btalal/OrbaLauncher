@@ -331,9 +331,10 @@ public class MainActivity extends Activity {
 
         // Nom en grand de l'appli du dock sélectionnée
         nomFavori = new TextView(this);
-        nomFavori.setTypeface(gras);
-        nomFavori.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
-        nomFavori.setTextColor(Color.WHITE);
+        nomFavori.setTypeface(interFin);   // Inter fine, comme l'heure : discret
+        nomFavori.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+        nomFavori.setLetterSpacing(0.01f);
+        nomFavori.setTextColor(TEXTE);
         nomFavori.setSingleLine(true);
         nomFavori.setEllipsize(android.text.TextUtils.TruncateAt.END);
         nomFavori.setIncludeFontPadding(false);
