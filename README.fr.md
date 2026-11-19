@@ -13,13 +13,13 @@
   <a href="https://github.com/btalal/orba/releases/latest"><img src="https://img.shields.io/github/v/release/btalal/orba?style=flat&label=version&color=00E5FF&labelColor=0A1433" alt="Version"></a>
   <a href="https://github.com/btalal/orba/releases"><img src="https://img.shields.io/github/downloads/btalal/orba/total?style=flat&label=t%C3%A9l%C3%A9chargements&color=0078FF&labelColor=0A1433" alt="Téléchargements"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/btalal/orba?style=flat&label=licence&color=4B3DFF&labelColor=0A1433" alt="Licence MIT"></a>
-  <img src="https://img.shields.io/badge/Android%20TV-9%2B-A64DFF?style=flat&labelColor=0A1433" alt="Android TV 9+">
+  <img src="https://img.shields.io/badge/Android%20TV-8%2B-A64DFF?style=flat&labelColor=0A1433" alt="Android TV 8+">
   <a href="https://www.youtube.com/@OrbaTechFR"><img src="https://img.shields.io/badge/YouTube-Orba%20Tech-FF0000?style=flat&logo=youtube&logoColor=white&labelColor=0A1433" alt="Chaîne YouTube Orba Tech"></a>
 </p>
 
 ---
 
-Orba remplace l'écran d'accueil chargé de Google TV par un écran calme et lisible :
+Orba remplace l'écran d'accueil chargé de Google TV et Android TV par un écran calme et lisible :
 l'heure, la date et **vos applications**, rien d'autre. Pas de publicités, pas de
 recommandations, pas de bandeaux « À regarder ensuite ».
 
@@ -31,7 +31,20 @@ recommandations, pas de bandeaux « À regarder ensuite ».
   <img src="docs/capture-accueil.png" alt="Écran d'accueil Orba sur une Philips OLED 65 pouces" width="900">
 </p>
 
-## Nouveau dans la version 3.6
+## Nouveau dans la version 3.7
+
+- 🌐 **Bilingue (Français & Anglais)** : Orba suit automatiquement la langue de la télé (français ou anglais) pour tous les menus, les réglages, la date et l'écran de veille.
+- 📺 **Compatible Google TV, Android TV & Xiaomi TV** :
+  - Le service de raccourci Accueil détecte désormais tous les grands launchers d'origine (`launcherx` sur Google TV, `tvlauncher` / `leanbacklauncher` sur Android TV, `com.mitv.tvhome` sur Xiaomi PatchWall).
+  - Orba déclare aussi la catégorie `CATEGORY_HOME` : si vous avez désactivé le launcher d'origine via ADB (par exemple avec [CleanYourTV](https://github.com/Gathin23/cleanyourtv)), Orba fonctionne comme **écran d'accueil natif** sans même avoir besoin du service d'accessibilité.
+  - Compatible dès **Android 8.0 (API 26)**.
+- 📦 **Applis sideloadées & Infos sur l'appli** :
+  - Affiche aussi bien les applis Android TV (`LEANBACK_LAUNCHER`) que les applis Android classiques installées manuellement (`LAUNCHER`).
+  - Appui long sur OK sur une tuile → **Infos sur l'appli…** ouvre directement la fiche système de l'application (pour Forcer l'arrêt, Vider le cache ou Désinstaller en deux clics).
+- 🔌 **Indicateur HDMI actif & touche Sources de la télécommande** :
+  - Les entrées HDMI actives affichent un point `●` dans la liste des Sources, et la touche physique **Source / Input** de la télécommande ouvre directement le panneau Sources.
+
+## Écran de veille animé et réglages (version 3.6)
 
 ### Écran de veille animé
 Après quelques minutes sans toucher la télécommande, Orba affiche son écran de veille : **l'anneau du logo
@@ -65,7 +78,7 @@ Un appui court sur la roue ouvre toujours les paramètres de la télé.
 ## Le bouton Sources (version 3.5)
 
 Un bouton **Sources** (icône téléviseur) dans l'en-tête, à côté du Wi-Fi : flèche haut depuis la grille,
-puis OK, et la liste des entrées de la télé s'ouvre (HDMI, antenne, USB…).
+puis OK (ou touche **Source / Input** de la télécommande), et la liste des entrées de la télé s'ouvre (HDMI avec `●` sur les ports actifs, antenne, USB…).
 
 <p align="center">
   <img src="docs/capture-sources.png" alt="Le bouton Sources ouvre la liste des entrées HDMI de la télé" width="900">
@@ -78,19 +91,22 @@ puis OK, et la liste des entrées de la télé s'ouvre (HDMI, antenne, USB…).
 
 ## Fonctionnalités
 
-- **Accueil épuré** : logo, heure, date et une grille d'applications (4 à 7 par ligne) avec les logos d'origine.
+- **Accueil épuré** : logo, heure, date et une grille d'applications (4 à 7 par ligne, y compris les applis sideloadées) avec les logos d'origine.
 - **Halo lumineux** à la couleur de chaque appli quand on la sélectionne, et son nom affiché dessous.
-- **Fond animé** bleu nuit avec des vagues lumineuses cyan → violet, qui protègent les écrans **OLED** du marquage.
+- **Fond animé** bleu nuit avec des vagues lumineuses cyan → violet (et un léger décalage périodique de l'en-tête) qui protègent les écrans **OLED** du marquage.
 - **Écran de veille animé** (logo, heure, date en dérive lente) et **réglages sur la télé**.
 - **En-tête** avec le bouton **Sources**, l'icône **Wi-Fi** (force du signal ; un clic ouvre les réglages réseau) et la roue **Paramètres**.
-- **Organisation libre** : appui long sur OK sur une tuile → *Déplacer*, *Masquer de l'accueil* ou *Applis masquées…*. La tuile **+** réaffiche une appli masquée.
+- **Organisation libre** : appui long sur OK sur une tuile → *Déplacer*, *Infos sur l'appli…*, *Masquer de l'accueil* ou *Applis masquées…*. La tuile **+** réaffiche une appli masquée.
 - **Démarre en premier** : à l'allumage de la télé et sur la touche **Accueil**, c'est Orba qui s'affiche.
-  **Appui long** sur Accueil : l'accueil Google TV d'origine reste accessible.
-- Très léger : environ 300 Ko, aucune autorisation sensible, aucune connexion à Internet.
+  **Appui long** sur Accueil : l'accueil Google TV / Android TV d'origine reste accessible.
+- **Bilingue** : français et anglais (suit automatiquement la langue de la télé).
+- **Ultra-léger et respectueux de la vie privée** : environ 315 Ko, aucune permission Internet, aucune pub, aucun pistage.
 
-## Installer Orba sur une télé Android
+## Installer Orba sur une télé Android / Google TV
 
-Prérequis : une télé ou un boîtier **Google TV / Android TV** sous **Android 9 ou plus récent**.
+Prérequis : une télé ou un boîtier **Google TV / Android TV** sous **Android 8.0 ou plus récent**.
+
+### Méthode A — Sans ordinateur (en conservant le launcher d'origine)
 
 1. **Télécharger l'APK** depuis la page [Releases](../../releases) du projet (`orba.apk`).
 2. **L'installer sur la télé**, au choix :
@@ -102,26 +118,47 @@ Prérequis : une télé ou un boîtier **Google TV / Android TV** sous **Android
      adb install -r orba.apk
      ```
    Android demandera d'autoriser l'installation d'applis de cette source : accepter pour l'appli utilisée.
-3. **Activer le raccourci Accueil** (indispensable pour qu'Orba s'ouvre au démarrage et sur la touche Accueil) :
+3. **Activer le raccourci Accueil** (indispensable pour qu'Orba s'ouvre au démarrage et sur la touche Accueil quand le launcher d'origine est toujours actif) :
    *Paramètres → Système → Accessibilité → Services → Touche Accueil → Orba → Activer*
-   (l'intitulé exact peut varier légèrement selon la marque de la télé).
 4. Appuyer sur la touche **Accueil** : Orba s'affiche. C'est prêt.
 
-> **Pourquoi un service d'accessibilité ?** Google TV ne permet pas de choisir un autre écran d'accueil.
+> **Pourquoi un service d'accessibilité ?** Google TV ne permet pas de choisir un autre écran d'accueil sans ADB.
 > Le service « Touche Accueil → Orba » voit **uniquement** la touche Accueil et le nom de l'appli affichée
-> (pour remplacer l'accueil Google quand il apparaît). Il ne lit pas le contenu de l'écran et n'enregistre rien.
+> (pour remplacer l'accueil d'origine quand il apparaît). Il ne lit pas le contenu de l'écran (`canRetrieveWindowContent="false"`) et n'enregistre rien.
+
+### Méthode B — Accueil natif (après nettoyage via ADB / CleanYourTV)
+
+Si vous avez désactivé le launcher d'origine via ADB (par exemple avec [CleanYourTV](https://github.com/Gathin23/cleanyourtv)),
+Orba déclare `android.intent.category.HOME` et répond **nativement** à la touche Accueil sans avoir besoin du service d'accessibilité :
+
+```bash
+adb connect <adresse-ip-de-la-tele>:5555
+adb install -r orba.apk
+adb shell cmd package set-home-activity fr.maison.accueil/.MainActivity
+```
 
 > **Télés Philips :** ne désactivez pas l'appli *Aide* (`org.droidtv.eum`) : le panneau Sources en a besoin
-> pour s'ouvrir. Orba la masque simplement de l'accueil.
+> pour s'ouvrir. Orba la masque simplement de l'accueil par défaut.
 
 ### Revenir en arrière
 
 Désactiver le service dans *Paramètres → Système → Accessibilité*, ou désinstaller Orba
-(*Paramètres → Applications → Orba → Désinstaller*). L'accueil Google TV revient tel quel.
+(*Paramètres → Applications → Orba → Désinstaller*). L'accueil d'origine revient tel quel.
+
+## Téléviseurs et boîtiers testés
+
+| Marque / Appareil | Système | Statut |
+|---|---|---|
+| **Philips OLED 65"** | Google TV / Android TV | ✅ Support complet (panneau Sources natif, vagues & veille OLED) |
+| **Google TV Streamer & Chromecast avec Google TV** | Google TV 12 / 14 | ✅ Support complet |
+| **Sony BRAVIA, TCL, Hisense** | Google TV / Android TV 8+ | ✅ Support complet |
+| **Xiaomi Mi Box / Mi TV & NVIDIA Shield** | Android TV 9+ / PatchWall | ✅ Support complet |
+
+*Vous utilisez Orba sur un autre modèle ? N'hésitez pas à le partager dans les [Issues](../../issues) ou les [Discussions](../../discussions) !*
 
 ## Construire l'APK soi-même (Windows)
 
-Aucun Gradle : l'APK est construit directement avec les outils du SDK Android.
+Aucun Gradle : l'APK est construit directement avec les outils du SDK Android en deux secondes.
 
 - Android SDK (build-tools et une plateforme récente) dans `%LOCALAPPDATA%\Android\Sdk`
 - Le JDK fourni avec Android Studio (`C:\Program Files\Android\Android Studio\jbr`)
@@ -139,10 +176,10 @@ s'installer par-dessus que si elle est signée avec la même clé.
 
 | Chemin | Rôle |
 |---|---|
-| `src/fr/maison/accueil/MainActivity.java` | Écran d'accueil : en-tête, grille, halo, menus, réglages, fond animé |
+| `src/fr/maison/accueil/MainActivity.java` | Écran d'accueil : en-tête, grille, halo, menus, infos appli, réglages, fond animé |
 | `src/fr/maison/accueil/Veille.java`, `VeilleActivity.java`, `OrbaDream.java` | Écran de veille animé (et économiseur d'écran Android) |
-| `src/fr/maison/accueil/ToucheAccueilService.java` | Service d'accessibilité : touche Accueil et remplacement de l'accueil Google |
-| `res/` | Icône, bannière, logo, icône Paramètres, textes |
+| `src/fr/maison/accueil/ToucheAccueilService.java` | Service d'accessibilité : touche Accueil et remplacement de l'accueil d'origine |
+| `res/` | Icône, bannière, logo, icône Paramètres, textes EN/FR |
 | `assets/` | Polices Inter et Montserrat (licence OFL) |
 | `source-logo/` | Logo Orba d'origine (image et SVG) |
 | `build.ps1`, `icone.ps1`, `Logo.cs` | Construction de l'APK et génération des visuels |
@@ -151,5 +188,5 @@ s'installer par-dessus que si elle est signée avec la même clé.
 
 - Code sous **licence MIT** (voir [LICENSE](LICENSE)). Le nom et le logo « Orba » ne sont pas couverts par cette licence (voir [NOTICE](NOTICE)).
 - Polices **[Inter](https://rsms.me/inter/)** et **[Montserrat](https://github.com/JulietaUla/Montserrat)** — SIL Open Font License 1.1 (licences dans `assets/`).
-- Icônes Paramètres et Wi-Fi d'après **[Lucide](https://lucide.dev)** — licence ISC.
+- Icônes Paramètres, Sources et Wi-Fi d'après **[Lucide](https://lucide.dev)** — licence ISC.
 - Logos des applications : ceux fournis par chaque application installée (marques de leurs propriétaires respectifs).

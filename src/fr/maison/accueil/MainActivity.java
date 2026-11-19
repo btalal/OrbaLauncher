@@ -65,6 +65,14 @@ public class MainActivity extends Activity {
     private static final String PLUS = "__plus__";
     private static final int COLONNES_DEFAUT = 5;
 
+    /** Vrai si la télé est en français ; sinon les textes s'affichent en anglais. */
+    private static boolean estFr() {
+        return "fr".equalsIgnoreCase(Locale.getDefault().getLanguage());
+    }
+    private static String tr(String fr, String en) {
+        return estFr() ? fr : en;
+    }
+
     // Réglages Orba (modifiables sur la télé : appui long sur la roue dentée)
     private int colonnes = COLONNES_DEFAUT;   // 4 à 7 tuiles par ligne
     private int fondMode = 0;                 // 0 vagues animées, 1 vagues fixes, 2 noir pur
@@ -187,7 +195,7 @@ public class MainActivity extends Activity {
 
         plus = new App();
         plus.pkg = PLUS;
-        plus.label = "Réafficher une appli";
+        plus.label = tr("Réafficher une appli", "Unhide an app");
         plus.fond = TUILE;
         plus.halo = CYAN;
 
@@ -295,7 +303,7 @@ public class MainActivity extends Activity {
 
         // ---- Titre de section
         TextView section = new TextView(this);
-        section.setText("Vos applications");
+        section.setText(tr("Vos applications", "Your apps"));
         section.setTypeface(moyen);
         section.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
         section.setTextColor(TEXTE_DOUX);
@@ -333,7 +341,7 @@ public class MainActivity extends Activity {
         aide.setTypeface(moyen);
         aide.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         aide.setTextColor(TEXTE);
-        aide.setText("Flèches : déplacer   ·   OK ou Retour : valider");
+        aide.setText(tr("Flèches : déplacer   ·   OK ou Retour : valider", "Arrows: move   ·   OK or Back: done"));
         aide.setPadding(dp(20), dp(9), dp(20), dp(9));
         GradientDrawable pastille = new GradientDrawable();
         pastille.setColor(0xE60B1430);
@@ -394,28 +402,33 @@ public class MainActivity extends Activity {
 
     private void loadApps() {
         PackageManager pm = getPackageManager();
-        Intent query = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
-        List<ResolveInfo> found = pm.queryIntentActivities(query, 0);
-
         List<App> list = new ArrayList<>();
         Set<String> seen = new HashSet<>();
-        for (ResolveInfo ri : found) {
-            String pkg = ri.activityInfo.packageName;
-            if (pkg.equals(getPackageName()) || !seen.add(pkg)) continue;
-            App a = new App();
-            a.pkg = pkg;
-            a.label = String.valueOf(ri.loadLabel(pm));
-            a.intent = new Intent(Intent.ACTION_MAIN)
-                    .addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
-                    .setComponent(new ComponentName(pkg, ri.activityInfo.name))
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            Drawable banner = ri.activityInfo.loadBanner(pm);
-            if (banner == null) banner = ri.activityInfo.applicationInfo.loadBanner(pm);
-            a.isBanner = banner != null;
-            a.image = banner != null ? banner : ri.loadIcon(pm);
-            list.add(a);
+
+        // 1. Applis Android TV (LEANBACK_LAUNCHER) puis applis Android classiques / sideloadées (LAUNCHER)
+        String[] categories = {Intent.CATEGORY_LEANBACK_LAUNCHER, Intent.CATEGORY_LAUNCHER};
+        for (String cat : categories) {
+            Intent query = new Intent(Intent.ACTION_MAIN).addCategory(cat);
+            List<ResolveInfo> found = pm.queryIntentActivities(query, 0);
+            for (ResolveInfo ri : found) {
+                if (ri.activityInfo == null) continue;
+                String pkg = ri.activityInfo.packageName;
+                if (pkg.equals(getPackageName()) || !seen.add(pkg)) continue;
+                App a = new App();
+                a.pkg = pkg;
+                a.label = String.valueOf(ri.loadLabel(pm));
+                a.intent = new Intent(Intent.ACTION_MAIN)
+                        .addCategory(cat)
+                        .setComponent(new ComponentName(pkg, ri.activityInfo.name))
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                Drawable banner = ri.activityInfo.loadBanner(pm);
+                if (banner == null) banner = ri.activityInfo.applicationInfo.loadBanner(pm);
+                a.isBanner = banner != null;
+                a.image = banner != null ? banner : ri.loadIcon(pm);
+                list.add(a);
+            }
         }
-        final Collator collator = Collator.getInstance(Locale.FRANCE);
+        final Collator collator = Collator.getInstance(Locale.getDefault());
         Collections.sort(list, new Comparator<App>() {
             @Override public int compare(App x, App y) { return collator.compare(x.label, y.label); }
         });
@@ -423,7 +436,7 @@ public class MainActivity extends Activity {
         if (!seen.contains(SETTINGS_PKG)) {
             App s = new App();
             s.pkg = SETTINGS_PKG;
-            s.label = "Paramètres";
+            s.label = tr("Paramètres", "Settings");
             s.intent = new Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try {
                 Drawable d = pm.getApplicationBanner(SETTINGS_PKG);
@@ -558,36 +571,43 @@ public class MainActivity extends Activity {
 
     /** Réglages Orba (appui long sur la roue dentée). Chaque choix est appliqué tout de suite. */
     private void montrerReglages() {
-        final String[] fonds = {"Vagues animées", "Vagues fixes", "Noir pur (OLED)"};
+        final String[] fonds = estFr()
+                ? new String[]{"Vagues animées", "Vagues fixes", "Noir pur (OLED)"}
+                : new String[]{"Animated waves", "Still waves", "Pure black (OLED)"};
         final String[] options = {
-                "Tuiles par ligne : " + colonnes,
-                "Fond : " + fonds[fondMode],
-                "Halo : " + (haloCyan ? "cyan Orba" : "couleur de l'appli"),
-                "Écran de veille : " + (veilleMinutes == 0 ? "désactivé" : "après " + veilleMinutes + " min"),
-                "Voir l'écran de veille",
-                "Applis masquées…",
-                "Paramètres de la télé"
+                tr("Tuiles par ligne : ", "Tiles per row: ") + colonnes,
+                tr("Fond : ", "Background: ") + fonds[fondMode],
+                tr("Halo : ", "Glow: ") + (haloCyan ? tr("cyan Orba", "Orba cyan") : tr("couleur de l'appli", "app colour")),
+                tr("Écran de veille : ", "Screensaver: ") + (veilleMinutes == 0 ? tr("désactivé", "off") : tr("après ", "after ") + veilleMinutes + " min"),
+                tr("Voir l'écran de veille", "Preview screensaver"),
+                tr("Applis masquées…", "Hidden apps…"),
+                tr("Paramètres de la télé", "TV settings")
         };
-        choisir("Réglages Orba", options, new Choix() {
+        choisir(tr("Réglages Orba", "Orba settings"), options, new Choix() {
             @Override public void choisi(int i) {
                 switch (i) {
-                    case 0: choisirValeur("Tuiles par ligne", new String[]{"4", "5", "6", "7"}, new Choix() {
+                    case 0: choisirValeur(tr("Tuiles par ligne", "Tiles per row"), new String[]{"4", "5", "6", "7"}, new Choix() {
                         @Override public void choisi(int k) {
                             colonnes = 4 + k; prefs.edit().putInt("colonnes", colonnes).apply();
                             signature = ""; appliquerOrdre(); montrerReglages();
                         } }); break;
-                    case 1: choisirValeur("Fond", fonds, new Choix() {
+                    case 1: choisirValeur(tr("Fond", "Background"), fonds, new Choix() {
                         @Override public void choisi(int k) {
                             fondMode = k; prefs.edit().putInt("fond", k).apply();
                             ondes.setMode(k); montrerReglages();
                         } }); break;
-                    case 2: choisirValeur("Halo", new String[]{"Couleur de l'appli", "Cyan Orba"}, new Choix() {
+                    case 2: choisirValeur(tr("Halo", "Glow"),
+                            estFr() ? new String[]{"Couleur de l'appli", "Cyan Orba"} : new String[]{"App colour", "Orba cyan"},
+                            new Choix() {
                         @Override public void choisi(int k) {
                             haloCyan = k == 1; prefs.edit().putBoolean("halo_cyan", haloCyan).apply();
                             signature = ""; appliquerOrdre(); montrerReglages();
                         } }); break;
                     case 3: final int[] minutes = {0, 5, 10, 20, 30};
-                        choisirValeur("Écran de veille", new String[]{"Désactivé", "Après 5 min", "Après 10 min", "Après 20 min", "Après 30 min"}, new Choix() {
+                        choisirValeur(tr("Écran de veille", "Screensaver"),
+                                estFr() ? new String[]{"Désactivé", "Après 5 min", "Après 10 min", "Après 20 min", "Après 30 min"}
+                                        : new String[]{"Off", "After 5 min", "After 10 min", "After 20 min", "After 30 min"},
+                                new Choix() {
                         @Override public void choisi(int k) {
                             veilleMinutes = minutes[k]; prefs.edit().putInt("veille_minutes", veilleMinutes).apply();
                             relancerVeille(); montrerReglages();
@@ -602,21 +622,36 @@ public class MainActivity extends Activity {
 
     private void choisirValeur(String titre, String[] valeurs, Choix action) { choisir(titre, valeurs, action); }
 
-    /** Menu de l'appui long : déplacer, masquer, réafficher. */
+    /** Ouvre la fiche système de l'appli (Forcer l'arrêt, Vider le cache, Désinstaller). */
+    private void infosAppli(App a) {
+        try {
+            startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    android.net.Uri.fromParts("package", a.pkg, null))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (Exception e) {
+            ouvrir(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS, Settings.ACTION_SETTINGS);
+        }
+    }
+
+    /** Menu de l'appui long : déplacer, infos sur l'appli, masquer, réafficher. */
     private void menu(final App a) {
         final boolean protege = SETTINGS_PKG.equals(a.pkg);
         final List<String> choix = new ArrayList<>();
-        choix.add("Déplacer");
-        if (!protege) choix.add("Masquer de l'accueil");
-        choix.add("Applis masquées…");
-        choix.add("Réglages Orba…");
+        final List<Integer> codes = new ArrayList<>();
+        choix.add(tr("Déplacer", "Move")); codes.add(0);
+        if (!protege) { choix.add(tr("Infos sur l'appli…", "App info…")); codes.add(1); }
+        if (!protege) { choix.add(tr("Masquer de l'accueil", "Hide from home")); codes.add(2); }
+        choix.add(tr("Applis masquées…", "Hidden apps…")); codes.add(3);
+        choix.add(tr("Réglages Orba…", "Orba settings…")); codes.add(4);
         choisir(a.label, choix.toArray(new String[0]), new Choix() {
             @Override public void choisi(int which) {
-                String c = choix.get(which);
-                if (c.startsWith("Déplacer")) commencerDeplacement(a);
-                else if (c.startsWith("Masquer")) masquer(a);
-                else if (c.startsWith("Réglages")) montrerReglages();
-                else montrerMasquees();
+                switch (codes.get(which)) {
+                    case 0: commencerDeplacement(a); break;
+                    case 1: infosAppli(a); break;
+                    case 2: masquer(a); break;
+                    case 3: montrerMasquees(); break;
+                    case 4: montrerReglages(); break;
+                }
             }
         });
     }
@@ -629,7 +664,7 @@ public class MainActivity extends Activity {
         if (idx >= 0 && idx + 1 < apps.size()) focusPkg = apps.get(idx + 1).pkg;
         else if (idx > 0) focusPkg = apps.get(idx - 1).pkg;
         appliquerOrdre();
-        Toast.makeText(this, a.label + " est masqué (tuile « + » pour le réafficher)", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, a.label + tr(" est masqué (tuile « + » pour le réafficher)", " hidden (use '+' tile to restore)"), Toast.LENGTH_LONG).show();
     }
 
     private void montrerMasquees() {
@@ -637,12 +672,12 @@ public class MainActivity extends Activity {
         final List<App> liste = new ArrayList<>();
         for (App a : toutes) if (m.contains(a.pkg) && !SETTINGS_PKG.equals(a.pkg)) liste.add(a);
         if (liste.isEmpty()) {
-            Toast.makeText(this, "Aucune appli masquée", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, tr("Aucune appli masquée", "No hidden apps"), Toast.LENGTH_SHORT).show();
             return;
         }
         String[] noms = new String[liste.size()];
         for (int i = 0; i < noms.length; i++) noms[i] = liste.get(i).label;
-        choisir("Réafficher une appli", noms, new Choix() {
+        choisir(tr("Réafficher une appli", "Unhide an app"), noms, new Choix() {
             @Override public void choisi(int which) {
                 App a = liste.get(which);
                 Set<String> mm = new HashSet<>(prefs.getStringSet("masquees", new HashSet<String>()));
@@ -679,8 +714,13 @@ public class MainActivity extends Activity {
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         relancerVeille();   // toute touche repousse l'écran de veille
-        // Roue dentée : OK court = paramètres de la télé, OK maintenu 0,6 s = Réglages Orba.
         int kc = e.getKeyCode();
+        // Touche physique Sources / Input de la télécommande : ouvre directement le panneau Sources
+        if (kc == KeyEvent.KEYCODE_TV_INPUT || kc == KeyEvent.KEYCODE_TV_ANTENNA_CABLE) {
+            if (e.getAction() == KeyEvent.ACTION_UP) ouvrirSources();
+            return true;
+        }
+        // Roue dentée : OK court = paramètres de la télé, OK maintenu 0,6 s = Réglages Orba.
         if ((kc == KeyEvent.KEYCODE_DPAD_CENTER || kc == KeyEvent.KEYCODE_ENTER || kc == KeyEvent.KEYCODE_NUMPAD_ENTER)
                 && boutonReglages != null && (boutonReglages.isFocused() || okRoueEnfonce)) {
             if (e.getAction() == KeyEvent.ACTION_DOWN) {
@@ -789,14 +829,15 @@ public class MainActivity extends Activity {
             return;
         } catch (Exception ignored) { }
         final List<android.media.tv.TvInputInfo> entrees = new ArrayList<>();
+        android.media.tv.TvInputManager tim = null;
         try {
-            android.media.tv.TvInputManager tim = (android.media.tv.TvInputManager) getSystemService(TV_INPUT_SERVICE);
+            tim = (android.media.tv.TvInputManager) getSystemService(TV_INPUT_SERVICE);
             for (android.media.tv.TvInputInfo info : tim.getTvInputList()) {
                 if (info.isPassthroughInput() && !info.isHidden(this)) entrees.add(info);
             }
         } catch (Exception ignored) { }
         if (entrees.isEmpty()) {
-            Toast.makeText(this, "Aucune source disponible sur cette télé", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, tr("Aucune source disponible sur cette télé", "No input source available on this TV"), Toast.LENGTH_SHORT).show();
             return;
         }
         String[] noms = new String[entrees.size()];
@@ -804,16 +845,20 @@ public class MainActivity extends Activity {
             android.media.tv.TvInputInfo info = entrees.get(i);
             CharSequence nom = info.loadCustomLabel(this);
             if (nom == null || nom.length() == 0) nom = info.loadLabel(this);
-            noms[i] = String.valueOf(nom);
+            boolean actif = false;
+            try {
+                actif = tim != null && tim.getInputState(info.getId()) == android.media.tv.TvInputManager.INPUT_STATE_CONNECTED;
+            } catch (Exception ignored) { }
+            noms[i] = (actif ? "●  " : "") + String.valueOf(nom);
         }
-        choisir("Sources", noms, new Choix() {
+        choisir(tr("Sources", "Inputs"), noms, new Choix() {
             @Override public void choisi(int which) {
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW,
                             android.media.tv.TvContract.buildChannelUriForPassthroughInput(entrees.get(which).getId()))
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 } catch (Exception e) {
-                    Toast.makeText(MainActivity.this, "Impossible d'ouvrir cette source", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, tr("Impossible d'ouvrir cette source", "Unable to open this input"), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -826,14 +871,14 @@ public class MainActivity extends Activity {
                 return;
             } catch (Exception ignored) { }
         }
-        Toast.makeText(this, "Impossible d'ouvrir les paramètres", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, tr("Impossible d'ouvrir les paramètres", "Unable to open settings"), Toast.LENGTH_SHORT).show();
     }
 
     private void launch(App a) {
         try {
             startActivity(a.intent);
         } catch (Exception e) {
-            Toast.makeText(this, "Impossible d'ouvrir " + a.label, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, tr("Impossible d'ouvrir ", "Unable to open ") + a.label, Toast.LENGTH_SHORT).show();
         }
     }
 

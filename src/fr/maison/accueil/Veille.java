@@ -51,8 +51,8 @@ final class Veille {
         private final Paint pHeure = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Paint pDate = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Paint pMarque = new Paint(Paint.ANTI_ALIAS_FLAG);
-        private final SimpleDateFormat fHeure = new SimpleDateFormat("HH:mm", Locale.FRANCE);
-        private final SimpleDateFormat fDate = new SimpleDateFormat("EEEE d MMMM", Locale.FRANCE);
+        private final SimpleDateFormat fHeure = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        private final SimpleDateFormat fDate = new SimpleDateFormat("EEEE d MMMM", Locale.getDefault());
         private final long t0 = SystemClock.uptimeMillis();
         private final float d;
 
@@ -117,7 +117,7 @@ final class Veille {
             float yHeure = yLogo + ra + 22 * d - pHeure.ascent();
             c.drawText(fHeure.format(maintenant), cx, yHeure, pHeure);
             String date = fDate.format(maintenant);
-            date = date.substring(0, 1).toUpperCase(Locale.FRANCE) + date.substring(1);
+            if (!date.isEmpty()) date = date.substring(0, 1).toUpperCase(Locale.getDefault()) + date.substring(1);
             c.drawText(date, cx, yHeure + 34 * d, pDate);
             c.drawText("ORBA", cx, yHeure + 62 * d, pMarque);
 

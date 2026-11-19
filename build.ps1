@@ -1,4 +1,4 @@
-# Construit accueil-simple.apk sans Gradle, avec les outils du SDK Android.
+﻿# Construit accueil-simple.apk sans Gradle, avec les outils du SDK Android.
 $ErrorActionPreference = "Stop"
 $here = $PSScriptRoot
 $sdk  = "$env:LOCALAPPDATA\Android\Sdk"
@@ -19,7 +19,7 @@ Remove-Item "$here\res\drawable-xhdpi\icone.png" -ErrorAction SilentlyContinue  
 
 # 2. Ressources
 & "$bt\aapt2.exe" compile --dir "$here\res" -o "$out\res.zip"
-& "$bt\aapt2.exe" link -I $jar --manifest "$here\AndroidManifest.xml" -o "$out\base.apk" "$out\res.zip" -A "$here\assets" --min-sdk-version 28 --target-sdk-version 34
+& "$bt\aapt2.exe" link -I $jar --manifest "$here\AndroidManifest.xml" -o "$out\base.apk" "$out\res.zip" -A "$here\assets" --min-sdk-version 26 --target-sdk-version 34
 if ($LASTEXITCODE) { throw "aapt2 link a échoué" }
 
 # 3. Code Java -> .class -> .dex
@@ -27,7 +27,7 @@ $src = Get-ChildItem -Recurse "$here\src" -Filter *.java | ForEach-Object FullNa
 & "$jbr\javac.exe" -source 8 -target 8 -bootclasspath $jar '-Xlint:-options' -encoding UTF-8 -d "$out\classes" $src
 if ($LASTEXITCODE) { throw "javac a échoué" }
 $classes = Get-ChildItem -Recurse "$out\classes" -Filter *.class | ForEach-Object FullName
-& "$bt\d8.bat" --release --min-api 28 --lib $jar --output $out $classes
+& "$bt\d8.bat" --release --min-api 26 --lib $jar --output $out $classes
 if ($LASTEXITCODE) { throw "d8 a échoué" }
 
 # 4. Ajouter le .dex, aligner, signer

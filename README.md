@@ -13,13 +13,13 @@
   <a href="https://github.com/btalal/orba/releases/latest"><img src="https://img.shields.io/github/v/release/btalal/orba?style=flat&label=version&color=00E5FF&labelColor=0A1433" alt="Version"></a>
   <a href="https://github.com/btalal/orba/releases"><img src="https://img.shields.io/github/downloads/btalal/orba/total?style=flat&label=downloads&color=0078FF&labelColor=0A1433" alt="Downloads"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/btalal/orba?style=flat&label=license&color=4B3DFF&labelColor=0A1433" alt="MIT license"></a>
-  <img src="https://img.shields.io/badge/Android%20TV-9%2B-A64DFF?style=flat&labelColor=0A1433" alt="Android TV 9+">
+  <img src="https://img.shields.io/badge/Android%20TV-8%2B-A64DFF?style=flat&labelColor=0A1433" alt="Android TV 8+">
   <a href="https://www.youtube.com/@OrbaTechFR"><img src="https://img.shields.io/badge/YouTube-Orba%20Tech-FF0000?style=flat&logo=youtube&logoColor=white&labelColor=0A1433" alt="Orba Tech YouTube channel"></a>
 </p>
 
 ---
 
-Orba replaces the busy Google TV home screen with a calm, readable one: the time, the date and
+Orba replaces the busy Google TV and Android TV home screen with a calm, readable one: the time, the date and
 **your apps**, nothing else. No ads, no recommendations, no "Watch next" rows.
 
 <p align="center">
@@ -30,7 +30,20 @@ Orba replaces the busy Google TV home screen with a calm, readable one: the time
   <img src="docs/capture-accueil.png" alt="Orba home screen on a 65-inch Philips OLED TV" width="900">
 </p>
 
-## New in version 3.6
+## New in version 3.7
+
+- 🌐 **Bilingual (English & French)**: Orba automatically follows your TV's language (English or French) for all menus, settings, dates and the screensaver.
+- 📺 **Works across Google TV, Android TV & Xiaomi TV**:
+  - The Home shortcut service now detects all major stock launchers (`launcherx` on Google TV, `tvlauncher` / `leanbacklauncher` on Android TV, `com.mitv.tvhome` on Xiaomi PatchWall).
+  - Orba also declares `CATEGORY_HOME`, so if you debloated your TV and disabled the stock launcher via ADB (e.g. with [CleanYourTV](https://github.com/Gathin23/cleanyourtv)), Orba works as the **native Home app** without even needing the accessibility service.
+  - Supports **Android 8.0 (API 26)** and newer.
+- 📦 **Sideloaded apps & App info**:
+  - Lists both Android TV (`LEANBACK_LAUNCHER`) and standard sideloaded Android apps (`LAUNCHER`).
+  - Long-press OK on any tile → **App info…** opens the system details page in one click (to Force Stop, Clear Cache or Uninstall).
+- 🔌 **Connected HDMI indicator & physical Input key**:
+  - Active HDMI ports show a `●` indicator in the Sources list, and pressing the remote's physical **Input / Source** button opens the Sources panel directly.
+
+## Animated screensaver & On-TV settings (version 3.6)
 
 ### Animated screensaver
 After a few minutes without touching the remote, Orba shows its screensaver: **the logo ring slowly spins
@@ -48,7 +61,7 @@ everywhere when its brand offers that choice.
 ### Settings right on the TV
 Select the **gear shown at the top of Orba** and **hold the OK button** (the centre button of the remote) to open
 *Orba settings* — not the remote's own Settings button, which always opens the TV's settings. Another way in:
-long-press OK on any tile → *Réglages Orba…*. Every choice applies immediately:
+long-press OK on any tile → *Orba settings…*. Every choice applies immediately:
 
 | Setting | Options |
 |---|---|
@@ -56,14 +69,14 @@ long-press OK on any tile → *Réglages Orba…*. Every choice applies immediat
 | Background | Animated waves · Still waves · Pure black (OLED) |
 | Selection glow | App colour · Orba cyan |
 | Screensaver | Off · after 5, 10, 20 or 30 min |
-| Show the screensaver | Instant preview |
+| Preview screensaver | Instant preview |
 
 A short press on the gear still opens the TV's own settings.
 
 ## The Sources button (version 3.5)
 
-A **Sources** button (TV icon) sits in the header next to Wi-Fi: press Up from the grid, then OK, and the
-list of the TV's inputs opens (HDMI, antenna, USB…).
+A **Sources** button (TV icon) sits in the header next to Wi-Fi: press Up from the grid, then OK (or press the
+remote's physical **Input** key), and the list of the TV's inputs opens (HDMI with `●` on active ports, antenna, USB…).
 
 <p align="center">
   <img src="docs/capture-sources.png" alt="The Sources button opens the TV's list of HDMI inputs" width="900">
@@ -76,21 +89,22 @@ list of the TV's inputs opens (HDMI, antenna, USB…).
 
 ## Features
 
-- **Clean home screen**: logo, time, date and a grid of apps (4 to 7 per row) with their original logos.
+- **Clean home screen**: logo, time, date and a grid of apps (4 to 7 per row, including sideloaded apps) with their original logos.
 - **Glow** in each app's own colour when it is selected, with its name shown underneath.
-- **Animated background**: midnight blue with cyan-to-violet light waves that protect **OLED** screens from burn-in.
+- **Animated background**: midnight blue with cyan-to-violet light waves (plus a subtle header pixel-shift) that protect **OLED** screens from burn-in.
 - **Animated screensaver** (logo, time and date drifting slowly) and **on-TV settings**.
 - **Header** with the **Sources** button, the **Wi-Fi** icon (signal strength; click to open network settings) and the **Settings** gear.
-- **Arrange freely**: long-press OK on a tile → *Move*, *Hide from home* or *Hidden apps…*. The **+** tile brings a hidden app back.
+- **Arrange freely**: long-press OK on a tile → *Move*, *App info…*, *Hide from home* or *Hidden apps…*. The **+** tile brings a hidden app back.
 - **Opens first**: when the TV turns on and when you press **Home**, Orba appears.
-  **Long-press** Home to reach the original Google TV home.
-- Very light: about 300 KB, no sensitive permissions, no Internet access.
+  **Long-press** Home to reach the original Google TV / Android TV home.
+- **Bilingual**: English and French (follows the TV's language automatically).
+- **Ultra-light & private**: about 315 KB, no `INTERNET` permission, no ads, no tracking.
 
-> The app's interface is currently in French. Contributions for other languages are welcome.
+## Install Orba on an Android TV / Google TV
 
-## Install Orba on an Android TV
+Requirements: a **Google TV / Android TV** set or box running **Android 8.0 or later**.
 
-Requirements: a **Google TV / Android TV** set or box running **Android 9 or later**.
+### Method A — No computer needed (with the stock launcher kept)
 
 1. **Download the APK** from the project's [Releases](../../releases) page (`orba.apk`).
 2. **Install it on the TV**, using one of:
@@ -102,26 +116,47 @@ Requirements: a **Google TV / Android TV** set or box running **Android 9 or lat
      adb install -r orba.apk
      ```
    Android will ask you to allow installing apps from that source: accept it for the app you used.
-3. **Turn on the Home shortcut** (needed for Orba to open at start-up and on the Home key):
-   *Settings → System → Accessibility → Services → Touche Accueil → Orba → On*
-   (the exact wording can vary slightly between TV brands).
+3. **Turn on the Home shortcut** (needed for Orba to open at start-up and on the Home key when the stock launcher is still enabled):
+   *Settings → System → Accessibility → Services → Home Key → Orba (or Touche Accueil → Orba) → On*
 4. Press **Home**: Orba appears. You're done.
 
-> **Why an accessibility service?** Google TV does not let you choose another home screen.
-> The "Touche Accueil → Orba" service sees **only** the Home key and the name of the app on screen
-> (to replace the Google home when it shows up). It does not read screen content and records nothing.
+> **Why an accessibility service?** Google TV does not let you choose another home screen without ADB.
+> The "Home Key → Orba" service sees **only** the Home key and the package name of the app on screen
+> (to replace the stock home when it shows up). It never reads screen content (`canRetrieveWindowContent="false"`) and records nothing.
+
+### Method B — Native Home (after debloating with ADB / CleanYourTV)
+
+If you disabled the stock launcher over ADB (for example using [CleanYourTV](https://github.com/Gathin23/cleanyourtv)),
+Orba declares `android.intent.category.HOME` and answers the Home key **natively** — no accessibility service needed:
+
+```bash
+adb connect <tv-ip-address>:5555
+adb install -r orba.apk
+adb shell cmd package set-home-activity fr.maison.accueil/.MainActivity
+```
 
 > **Philips TVs:** don't disable the *Help* app (`org.droidtv.eum`): the Sources panel needs it to open.
-> Orba simply hides it from the home screen.
+> Orba simply hides it from the home screen by default.
 
 ### Undo
 
 Turn the service off in *Settings → System → Accessibility*, or uninstall Orba
-(*Settings → Apps → Orba → Uninstall*). The Google TV home comes back as it was.
+(*Settings → Apps → Orba → Uninstall*). The original home screen comes back as it was.
+
+## Tested TVs & Boxes
+
+| Brand / Device | Platform | Status |
+|---|---|---|
+| **Philips OLED 65"** | Google TV / Android TV | ✅ Full support (native Sources panel, OLED waves & screensaver) |
+| **Google TV Streamer & Chromecast with Google TV** | Google TV 12 / 14 | ✅ Full support |
+| **Sony BRAVIA, TCL, Hisense** | Google TV / Android TV 8+ | ✅ Full support |
+| **Xiaomi Mi Box / Mi TV & NVIDIA Shield** | Android TV 9+ / PatchWall | ✅ Full support |
+
+*Using Orba on another model? Feel free to share your feedback in [Issues](../../issues) or [Discussions](../../discussions)!*
 
 ## Build the APK yourself (Windows)
 
-No Gradle: the APK is built directly with the Android SDK tools.
+No Gradle: the APK is built directly with the Android SDK tools in a couple of seconds.
 
 - Android SDK (build-tools and a recent platform) in `%LOCALAPPDATA%\Android\Sdk`
 - The JDK bundled with Android Studio (`C:\Program Files\Android\Android Studio\jbr`)
@@ -139,10 +174,10 @@ app when it is signed with the same key.
 
 | Path | Role |
 |---|---|
-| `src/fr/maison/accueil/MainActivity.java` | Home screen: header, grid, glow, menus, settings, animated background |
+| `src/fr/maison/accueil/MainActivity.java` | Home screen: header, grid, glow, menus, app info, settings, animated background |
 | `src/fr/maison/accueil/Veille.java`, `VeilleActivity.java`, `OrbaDream.java` | Animated screensaver (and Android screensaver) |
-| `src/fr/maison/accueil/ToucheAccueilService.java` | Accessibility service: Home key and replacing the Google home |
-| `res/` | Icon, banner, logo, Settings icon, strings |
+| `src/fr/maison/accueil/ToucheAccueilService.java` | Accessibility service: Home key and replacing the stock home screen |
+| `res/` | Icon, banner, logo, Settings icon, EN/FR strings |
 | `assets/` | Inter and Montserrat fonts (OFL licence) |
 | `source-logo/` | Original Orba logo (image and SVG) |
 | `build.ps1`, `icone.ps1`, `Logo.cs` | APK build and artwork generation |
@@ -151,5 +186,5 @@ app when it is signed with the same key.
 
 - Code under the **MIT license** (see [LICENSE](LICENSE)). The "Orba" name and logo are not covered by this license (see [NOTICE](NOTICE)).
 - **[Inter](https://rsms.me/inter/)** and **[Montserrat](https://github.com/JulietaUla/Montserrat)** fonts — SIL Open Font License 1.1 (licences in `assets/`).
-- Settings and Wi-Fi icons adapted from **[Lucide](https://lucide.dev)** — ISC License.
+- Settings, Sources and Wi-Fi icons adapted from **[Lucide](https://lucide.dev)** — ISC License.
 - App logos: provided by each installed app (trademarks of their respective owners).

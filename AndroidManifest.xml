@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fr.maison.accueil"
-    android:versionCode="18"
-    android:versionName="3.6">
+    android:versionCode="19"
+    android:versionName="3.7">
 
-    <uses-sdk android:minSdkVersion="28" android:targetSdkVersion="34" />
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
 
     <!-- Icône réseau de l'en-tête (Wi-Fi / Ethernet) : lecture de l'état de la connexion seulement -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -12,11 +12,29 @@
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
-    <!-- Android 11+ : déclarer quelles applis on a besoin de voir -->
+    <!-- Android 11+ : déclarer quelles applis et quels réglages on a besoin de voir -->
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.WIFI_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.APPLICATION_DETAILS_SETTINGS" />
+            <data android:scheme="package" />
         </intent>
     </queries>
 
@@ -30,6 +48,9 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
+            android:stateNotNeeded="true"
+            android:excludeFromRecents="true"
+            android:clearTaskOnLaunch="true"
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode|locale">
             <intent-filter>
@@ -37,8 +58,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-            <!-- Pas de catégorie HOME : Google TV l'ignore ; c'est le service
-                 ToucheAccueilService qui redirige la touche Accueil. -->
+            <!-- Catégorie HOME : permet aussi d'utiliser Orba comme accueil natif
+                 si le launcher d'origine est désactivé (ex. via ADB / CleanYourTV). -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
         <!-- Écran de veille Orba (lancé par Orba après inactivité) -->
