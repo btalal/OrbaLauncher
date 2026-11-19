@@ -15,6 +15,21 @@ recommandations, pas de bandeaux « À regarder ensuite ».
   <img src="docs/capture-accueil.png" alt="Écran d'accueil Orba sur une Philips OLED 65 pouces" width="900">
 </p>
 
+## Nouveau dans la version 3.5 : le bouton Sources
+
+Un bouton **Sources** (icône téléviseur) fait son apparition dans l'en-tête, à côté du Wi-Fi.
+Flèche haut depuis la grille, puis OK : la liste des entrées de la télé s'ouvre (HDMI, antenne, USB…).
+Box, console de jeux, lecteur Blu-ray : on change de source sans quitter Orba.
+
+<p align="center">
+  <img src="docs/capture-sources.png" alt="Le bouton Sources d'Orba 3.5 ouvre la liste des entrées HDMI de la télé" width="900">
+</p>
+
+- **Télés Philips** : le panneau Sources d'origine s'ouvre.
+- **Autres télés Android** : la liste des entrées HDMI s'affiche dans une fenêtre aux couleurs d'Orba.
+
+▶️ Démonstration en vidéo : [Orba 3.5 : le nouveau bouton Sources](https://www.youtube.com/watch?v=y7Pzcqimt1k)
+
 ## Fonctionnalités
 
 - **Accueil épuré** : logo, heure, date et une grille de 5 applications par ligne avec les logos d'origine.
