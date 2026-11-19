@@ -21,7 +21,7 @@
 #   * com.google.android.apps.tv.launcherx and com.google.android.tungsten.setupwraith (Cast credentials).
 #   * The streaming apps (Netflix, YouTube, Prime Video, Disney+...): that is taste, not bloat.
 #
-# Found already disabled by the firmware (not part of this list): the region config packages
+# Already disabled before this cleanup (not part of this list): the region config packages
 # (org.droidtv.*config*), com.tpv.moments, com.vewd.core.browser, io.mimi.tvapp, ru.ivi.client,
 # com.omni.ssutv.*, the ATSC and ISDB tuners, and com.google.android.katniss.
 
