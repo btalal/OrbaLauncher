@@ -64,6 +64,12 @@ public class MainActivity extends Activity {
     private static final String SETTINGS_PKG = "com.android.tv.settings";
     private static final String PLUS = "__plus__";
     private static final int COLONNES_DEFAUT = 5;
+    private static final int MAX_FAVORIS = 4;
+    /** Favoris proposés au premier lancement de la 3.8, parmi les applis installées (dans cet ordre). */
+    private static final String[] FAVORIS_PAR_DEFAUT = {
+            "com.google.android.youtube.tv", "com.netflix.ninja", "com.amazon.amazonvideo.livingroom",
+            "com.disney.disneyplus", "com.canal.android.canal", "com.apple.atve.androidtv.appletv"
+    };
 
     /** Vrai si la télé est en français ; sinon les textes s'affichent en anglais. */
     private static boolean estFr() {
@@ -113,6 +119,10 @@ public class MainActivity extends Activity {
             "org.droidtv.sunrise"   // Alarme lever de soleil
     };
 
+    private final List<App> favoris = new ArrayList<>();     // dock : 4 favoris au maximum, en haut
+    private TextView nomFavori;                              // nom en grand de la tuile du dock choisie
+    private LinearLayout dock;
+    private ScrollView defilement;
     private final List<App> apps = new ArrayList<>();        // applis visibles, dans l'ordre affiché
     private final List<App> toutes = new ArrayList<>();      // toutes les applis (visibles + masquées)
     private final java.util.Map<String, App> cache = new java.util.HashMap<>();
@@ -301,6 +311,47 @@ public class MainActivity extends Activity {
         hdr.topMargin = dp(8);               // en-tête descendu d'environ 1 cm sur une 65 pouces
         column.addView(header, hdr);
 
+        // ---- Zone qui défile : nom du favori, dock de favoris, titre de section, grille
+        ScrollView scroll = new ScrollView(this);
+        defilement = scroll;
+        scroll.setVerticalScrollBarEnabled(false);
+        scroll.setVerticalFadingEdgeEnabled(true);
+        scroll.setFadingEdgeLength(dp(28));
+        scroll.setClipChildren(false);
+        scroll.setPadding(0, dp(4), 0, dp(24));
+        scroll.setClipToPadding(true);
+        scroll.setSmoothScrollingEnabled(true);
+
+        LinearLayout contenu = new LinearLayout(this);
+        contenu.setOrientation(LinearLayout.VERTICAL);
+        contenu.setClipChildren(false);
+        contenu.setClipToPadding(false);
+        scroll.addView(contenu, new ScrollView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        // Nom en grand de l'appli du dock sélectionnée
+        nomFavori = new TextView(this);
+        nomFavori.setTypeface(gras);
+        nomFavori.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+        nomFavori.setTextColor(Color.WHITE);
+        nomFavori.setSingleLine(true);
+        nomFavori.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        nomFavori.setIncludeFontPadding(false);
+        nomFavori.setAlpha(0f);
+        LinearLayout.LayoutParams nf = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        nf.topMargin = dp(18);
+        nf.leftMargin = dp(14);
+        contenu.addView(nomFavori, nf);
+
+        // Dock : jusqu'à 4 favoris en grandes tuiles
+        dock = new LinearLayout(this);
+        dock.setOrientation(LinearLayout.HORIZONTAL);
+        dock.setClipChildren(false);
+        dock.setClipToPadding(false);
+        contenu.addView(dock, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
         // ---- Titre de section
         TextView section = new TextView(this);
         section.setText(tr("Vos applications", "Your apps"));
@@ -310,25 +361,16 @@ public class MainActivity extends Activity {
         section.setLetterSpacing(0.02f);
         LinearLayout.LayoutParams sl = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        sl.topMargin = dp(30);
+        sl.topMargin = dp(14);
         sl.leftMargin = dp(14);
-        column.addView(section, sl);
+        contenu.addView(section, sl);
 
         // ---- Grille
-        ScrollView scroll = new ScrollView(this);
-        scroll.setVerticalScrollBarEnabled(false);
-        scroll.setVerticalFadingEdgeEnabled(true);
-        scroll.setFadingEdgeLength(dp(28));
-        scroll.setClipChildren(false);
-        scroll.setPadding(0, dp(4), 0, dp(24));
-        scroll.setClipToPadding(true);
-        scroll.setSmoothScrollingEnabled(true);
-
         rows = new LinearLayout(this);
         rows.setOrientation(LinearLayout.VERTICAL);
         rows.setClipChildren(false);
         rows.setClipToPadding(false);
-        scroll.addView(rows, new ScrollView.LayoutParams(
+        contenu.addView(rows, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(
@@ -466,6 +508,29 @@ public class MainActivity extends Activity {
         if (!o.isEmpty()) Collections.addAll(ordre, o.split("\\|"));
         Set<String> masquees = prefs.getStringSet("masquees", new HashSet<String>());
 
+        // Favoris du dock : choisis une première fois parmi les grandes applis de streaming installées.
+        if (!prefs.contains("favoris") && !toutes.isEmpty()) {
+            StringBuilder def = new StringBuilder();
+            int n = 0;
+            for (String pkg : FAVORIS_PAR_DEFAUT) {
+                App a = cache.get(pkg);
+                if (n < MAX_FAVORIS && a != null && toutes.contains(a) && !masquees.contains(pkg)) {
+                    if (def.length() > 0) def.append('|');
+                    def.append(pkg); n++;
+                }
+            }
+            prefs.edit().putString("favoris", def.toString()).apply();
+        }
+        List<App> favs = new ArrayList<>();
+        String f = prefs.getString("favoris", "");
+        if (!f.isEmpty()) {
+            for (String pkg : f.split("\\|")) {
+                App a = cache.get(pkg);
+                if (a != null && toutes.contains(a) && !masquees.contains(pkg) && !favs.contains(a)
+                        && !SETTINGS_PKG.equals(pkg) && favs.size() < MAX_FAVORIS) favs.add(a);
+            }
+        }
+
         List<App> visibles = new ArrayList<>();
         for (String pkg : ordre) {
             App a = cache.get(pkg);
@@ -474,22 +539,53 @@ public class MainActivity extends Activity {
         for (App a : toutes) {   // nouvelles applis : à la fin, par ordre alphabétique
             if (!visibles.contains(a) && !masquees.contains(a.pkg)) visibles.add(a);
         }
-        // Paramètres n'est plus une tuile : roue dentée en haut à droite.
-        for (int i = visibles.size() - 1; i >= 0; i--) if (SETTINGS_PKG.equals(visibles.get(i).pkg)) visibles.remove(i);
+        // Paramètres n'est plus une tuile : roue dentée en haut à droite. Les favoris sont dans le dock.
+        for (int i = visibles.size() - 1; i >= 0; i--) {
+            if (SETTINGS_PKG.equals(visibles.get(i).pkg) || favs.contains(visibles.get(i))) visibles.remove(i);
+        }
 
-        StringBuilder sig = new StringBuilder();
-        for (App a : visibles) sig.append(a.pkg).append('|');
-        if (sig.toString().equals(signature)) return;   // rien n'a changé : on garde la sélection
-        signature = sig.toString();
+        String sig = joindre(favs) + "|#|" + joindre(visibles) + "|";
+        if (sig.equals(signature)) return;   // rien n'a changé : on garde la sélection
+        signature = sig;
+        favoris.clear();
+        favoris.addAll(favs);
         apps.clear();
         apps.addAll(visibles);
         buildGrid();
     }
 
-    private void memoriserOrdre() {
+    private static String joindre(List<App> liste) {
         StringBuilder sb = new StringBuilder();
-        for (App a : apps) { if (sb.length() > 0) sb.append('|'); sb.append(a.pkg); }
-        prefs.edit().putString("ordre", sb.toString()).apply();
+        for (App a : liste) { if (sb.length() > 0) sb.append('|'); sb.append(a.pkg); }
+        return sb.toString();
+    }
+
+    private void memoriserOrdre() {
+        prefs.edit().putString("ordre", joindre(apps)).putString("favoris", joindre(favoris)).apply();
+    }
+
+    /** Signature de l'affichage actuel (dock + grille), pour ne reconstruire que si elle change. */
+    private String signatureActuelle() {
+        return joindre(favoris) + "|#|" + joindre(apps) + "|";
+    }
+
+    /** Ajoute l'appli au dock (4 au maximum) ou l'en retire. */
+    private void basculerFavori(App a) {
+        List<App> liste = new ArrayList<>(favoris);
+        if (liste.contains(a)) {
+            liste.remove(a);
+            Toast.makeText(this, a.label + tr(" retiré des favoris", " removed from favourites"), Toast.LENGTH_SHORT).show();
+        } else {
+            if (liste.size() >= MAX_FAVORIS) {
+                Toast.makeText(this, tr("4 favoris au maximum : retirez-en un d'abord",
+                        "4 favourites at most: remove one first"), Toast.LENGTH_LONG).show();
+                return;
+            }
+            liste.add(a);
+        }
+        prefs.edit().putString("favoris", joindre(liste)).apply();
+        focusPkg = a.pkg;
+        appliquerOrdre();
     }
 
     // ------------------------------------------------------------------ menus
@@ -639,6 +735,10 @@ public class MainActivity extends Activity {
         final List<String> choix = new ArrayList<>();
         final List<Integer> codes = new ArrayList<>();
         choix.add(tr("Déplacer", "Move")); codes.add(0);
+        if (!protege) {
+            if (favoris.contains(a)) { choix.add(tr("Retirer des favoris", "Remove from favourites")); codes.add(5); }
+            else { choix.add(tr("Ajouter aux favoris", "Add to favourites")); codes.add(5); }
+        }
         if (!protege) { choix.add(tr("Infos sur l'appli…", "App info…")); codes.add(1); }
         if (!protege) { choix.add(tr("Masquer de l'accueil", "Hide from home")); codes.add(2); }
         choix.add(tr("Applis masquées…", "Hidden apps…")); codes.add(3);
@@ -651,6 +751,7 @@ public class MainActivity extends Activity {
                     case 2: masquer(a); break;
                     case 3: montrerMasquees(); break;
                     case 4: montrerReglages(); break;
+                    case 5: basculerFavori(a); break;
                 }
             }
         });
@@ -659,10 +760,13 @@ public class MainActivity extends Activity {
     private void masquer(App a) {
         Set<String> m = new HashSet<>(prefs.getStringSet("masquees", new HashSet<String>()));
         m.add(a.pkg);
-        int idx = apps.indexOf(a);
-        prefs.edit().putStringSet("masquees", m).apply();
-        if (idx >= 0 && idx + 1 < apps.size()) focusPkg = apps.get(idx + 1).pkg;
-        else if (idx > 0) focusPkg = apps.get(idx - 1).pkg;
+        List<App> liste = favoris.contains(a) ? favoris : apps;
+        int idx = liste.indexOf(a);
+        List<App> favs = new ArrayList<>(favoris);
+        favs.remove(a);
+        prefs.edit().putStringSet("masquees", m).putString("favoris", joindre(favs)).apply();
+        if (idx >= 0 && idx + 1 < liste.size()) focusPkg = liste.get(idx + 1).pkg;
+        else if (idx > 0) focusPkg = liste.get(idx - 1).pkg;
         appliquerOrdre();
         Toast.makeText(this, a.label + tr(" est masqué (tuile « + » pour le réafficher)", " hidden (use '+' tile to restore)"), Toast.LENGTH_LONG).show();
     }
@@ -704,6 +808,7 @@ public class MainActivity extends Activity {
     }
 
     private void rafraichirTuiles() {
+        for (int k = 0; k < dock.getChildCount(); k++) dock.getChildAt(k).invalidate();
         for (int r = 0; r < rows.getChildCount(); r++) {
             ViewGroup row = (ViewGroup) rows.getChildAt(r);
             for (int k = 0; k < row.getChildCount(); k++) row.getChildAt(k).invalidate();
@@ -746,13 +851,15 @@ public class MainActivity extends Activity {
                     || code == KeyEvent.KEYCODE_DPAD_CENTER || code == KeyEvent.KEYCODE_ENTER
                     || code == KeyEvent.KEYCODE_BACK || super.dispatchKeyEvent(e);
         }
-        int i = apps.indexOf(enDeplacement);
+        boolean dansDock = favoris.contains(enDeplacement);   // un favori se déplace dans le dock seulement
+        List<App> liste = dansDock ? favoris : apps;
+        int i = liste.indexOf(enDeplacement);
         int j = i;
         switch (code) {
             case KeyEvent.KEYCODE_DPAD_LEFT:  j = i - 1; break;
             case KeyEvent.KEYCODE_DPAD_RIGHT: j = i + 1; break;
-            case KeyEvent.KEYCODE_DPAD_UP:    j = i - colonnes; break;
-            case KeyEvent.KEYCODE_DPAD_DOWN:  j = Math.min(i + colonnes, apps.size() - 1); break;
+            case KeyEvent.KEYCODE_DPAD_UP:    j = dansDock ? i : i - colonnes; break;
+            case KeyEvent.KEYCODE_DPAD_DOWN:  j = dansDock ? i : Math.min(i + colonnes, apps.size() - 1); break;
             case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_ENTER:
             case KeyEvent.KEYCODE_BACK:
@@ -761,13 +868,11 @@ public class MainActivity extends Activity {
             default:
                 return super.dispatchKeyEvent(e);
         }
-        if (j >= 0 && j < apps.size() && j != i) {
-            App moved = apps.remove(i);
-            apps.add(j, moved);
+        if (j >= 0 && j < liste.size() && j != i) {
+            App moved = liste.remove(i);
+            liste.add(j, moved);
             focusPkg = moved.pkg;
-            StringBuilder sig = new StringBuilder();
-            for (App a : apps) sig.append(a.pkg).append('|');
-            signature = sig.toString();
+            signature = signatureActuelle();
             buildGrid();
         }
         return true;
@@ -775,7 +880,29 @@ public class MainActivity extends Activity {
 
     private void buildGrid() {
         rows.removeAllViews();
+        dock.removeAllViews();
         Tile first = null, cible = null;
+
+        // Dock : les favoris en grandes tuiles (4 colonnes), sans nom dessous (il s'affiche en grand au-dessus).
+        for (final App a : favoris) {
+            Tile t = new Tile(this, a, true);
+            t.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) { launch(a); }
+            });
+            t.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override public boolean onLongClick(View v) { menu(a); return true; }
+            });
+            dock.addView(t, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+            if (first == null) first = t;
+            if (a.pkg.equals(focusPkg)) cible = t;
+        }
+        for (int k = favoris.size(); k > 0 && k < MAX_FAVORIS; k++) {
+            dock.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1f));
+        }
+        int vis = favoris.isEmpty() ? View.GONE : View.VISIBLE;
+        dock.setVisibility(vis);
+        nomFavori.setVisibility(vis);
+
         LinearLayout row = null;
         List<App> tuiles = new ArrayList<>(apps);
         tuiles.add(plus);   // tuile « + » toujours en dernier
@@ -814,6 +941,23 @@ public class MainActivity extends Activity {
         }
         Tile focus = cible != null ? cible : first;
         if (focus != null) focus.requestFocus();
+        if (focus != null && focus.dansDock && defilement != null) defilement.scrollTo(0, 0);   // le nom en grand reste visible
+    }
+
+    /** Affiche en grand le nom du favori choisi, et l'efface quand la sélection quitte le dock. */
+    private void majNomFavori(final Tile t, boolean gain) {
+        if (gain) {
+            nomFavori.setText(t.app.label);
+            nomFavori.animate().alpha(1f).setDuration(180).start();
+            if (defilement != null) defilement.smoothScrollTo(0, 0);
+        } else {
+            handler.post(new Runnable() {
+                @Override public void run() {
+                    View v = getCurrentFocus();
+                    if (!(v instanceof Tile) || !((Tile) v).dansDock) nomFavori.animate().alpha(0f).setDuration(180).start();
+                }
+            });
+        }
     }
 
     /** Ouvre le premier écran de réglages disponible parmi ceux proposés. */
@@ -922,8 +1066,9 @@ public class MainActivity extends Activity {
     /** Tuile arrondie : logo d'origine, contour cyan lumineux et nom quand elle est choisie. */
     final class Tile extends View {
         final App app;
+        final boolean dansDock;             // tuile du dock de favoris : plus grande, nom affiché au-dessus du dock
         final int marge = dp(16);           // place réservée au halo autour de la tuile
-        final int hautNom = dp(30);         // place du nom sous la tuile
+        final int hautNom;                  // place du nom sous la tuile
         final float rayon = dp(14);
         final RectF carte = new RectF();
         final RectF tmp = new RectF();
@@ -937,9 +1082,13 @@ public class MainActivity extends Activity {
         float focus = 0f;
         ValueAnimator anim;
 
-        Tile(Context c, App a) {
+        Tile(Context c, App a) { this(c, a, false); }
+
+        Tile(Context c, App a, boolean dock) {
             super(c);
             app = a;
+            dansDock = dock;
+            hautNom = dock ? dp(8) : dp(30);
             setFocusable(true);
             setClickable(true);
             setContentDescription(a.label);
@@ -994,6 +1143,7 @@ public class MainActivity extends Activity {
             View row = (View) getParent();
             if (row != null) row.setTranslationZ(gain ? 1f : 0f);
             if (row != null) row.setOutlineProvider(null);
+            if (dansDock) majNomFavori(this, gain);
         }
 
         /** Contour blanc autour de la tuile en cours de déplacement. */
@@ -1055,8 +1205,8 @@ public class MainActivity extends Activity {
             c.drawRect(carte, voile);
             c.restore();
 
-            // 4. Nom de l'appli sous la tuile choisie (pas de contour : le halo suffit).
-            if (focus > 0.01f) {
+            // 4. Nom de l'appli sous la tuile choisie (pas de contour : le halo suffit). Dock : nom en grand au-dessus.
+            if (focus > 0.01f && !dansDock) {
                 nom.setAlpha(Math.round(focus * 255));
                 String txt = app.label;
                 float max = getWidth() - dp(8);

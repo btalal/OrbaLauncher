@@ -26,7 +26,13 @@ Orba replaces the busy Google TV and Android TV home screen with a calm, readabl
   <img src="docs/demo.gif" alt="Demo: browsing Orba and opening the Sources button" width="800">
 </p>
 
-## New in version 3.7
+## New in version 3.8: the favourites dock
+
+Your **4 favourite apps** sit in large tiles at the top of Orba, and the selected one's name shows in large type
+above them. Long-press OK on any tile → **Add to favourites** (or *Remove from favourites*); *Move* reorders the
+dock. On first start the dock is filled with the big streaming apps you already have installed.
+
+## Version 3.7
 
 - 🌐 **Bilingual (English & French)**: Orba automatically follows your TV's language (English or French) for all menus, settings, dates and the screensaver.
 - 📺 **Works across Google TV, Android TV & Xiaomi TV**:

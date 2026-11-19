@@ -5,6 +5,13 @@ All notable changes to Orba. Download the latest version from the
 your tiles and settings are kept.
 
 ## [Unreleased]
+
+## [3.8] - 2026-11-19
+### Added
+- **Favourites dock**: up to 4 apps in large tiles above the grid, with the selected app's name in large type.
+  Long-press OK on a tile → *Add to favourites* / *Remove from favourites*; *Move* reorders the dock. On first
+  start, the dock is filled with the big streaming apps already installed (YouTube, Netflix, Prime Video,
+  Disney+, Canal+, Apple TV, in that order).
 - Repository: TV cleanup tools (`tools/`) with the list tested on the Philips 65OLED908, automatic APK build on
   GitHub Actions, contributing guide, issue and pull request templates, this changelog.
 
@@ -40,7 +47,8 @@ your tiles and settings are kept.
   animated waves), Wi-Fi and Settings icons, move and hide tiles, Home key shortcut through an accessibility
   service.
 
-[Unreleased]: https://github.com/btalal/orba/compare/v3.7...HEAD
+[Unreleased]: https://github.com/btalal/orba/compare/v3.8...HEAD
+[3.8]: https://github.com/btalal/orba/releases/tag/v3.8
 [3.7]: https://github.com/btalal/orba/releases/tag/v3.7
 [3.6]: https://github.com/btalal/orba/releases/tag/v3.6
 [3.5]: https://github.com/btalal/orba/releases/tag/v3.5

@@ -27,7 +27,14 @@ recommandations, pas de bandeaux « À regarder ensuite ».
   <img src="docs/demo.gif" alt="Démonstration : navigation dans Orba et ouverture du bouton Sources" width="800">
 </p>
 
-## Nouveau dans la version 3.7
+## Nouveau dans la version 3.8 : le dock de favoris
+
+Vos **4 applis préférées** s'affichent en grandes tuiles en haut d'Orba, et le nom de celle qui est
+sélectionnée apparaît en grand au-dessus. Appui long sur OK sur une tuile → **Ajouter aux favoris** (ou *Retirer
+des favoris*) ; *Déplacer* change leur ordre. Au premier démarrage, le dock reprend les grandes applis de
+streaming déjà installées.
+
+## Version 3.7
 
 - 🌐 **Bilingue (Français & Anglais)** : Orba suit automatiquement la langue de la télé (français ou anglais) pour tous les menus, les réglages, la date et l'écran de veille.
 - 📺 **Compatible Google TV, Android TV & Xiaomi TV** :
