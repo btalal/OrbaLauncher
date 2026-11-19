@@ -63,7 +63,25 @@ public class MainActivity extends Activity {
 
     private static final String SETTINGS_PKG = "com.android.tv.settings";
     private static final String PLUS = "__plus__";
-    private static final int COLONNES = 5;
+    private static final int COLONNES_DEFAUT = 5;
+
+    // Réglages Orba (modifiables sur la télé : appui long sur la roue dentée)
+    private int colonnes = COLONNES_DEFAUT;   // 4 à 7 tuiles par ligne
+    private int fondMode = 0;                 // 0 vagues animées, 1 vagues fixes, 2 noir pur
+    private boolean haloCyan = false;         // halo : couleur de l'appli (false) ou cyan Orba (true)
+    private int veilleMinutes = 10;           // 0 = écran de veille Orba désactivé
+
+    /** Lance l'écran de veille Orba après le délai d'inactivité choisi. */
+    private final Runnable lancerVeille = new Runnable() {
+        @Override public void run() {
+            if (veilleMinutes > 0 && hasWindowFocus()) startActivity(new Intent(MainActivity.this, VeilleActivity.class));
+        }
+    };
+
+    private void relancerVeille() {
+        handler.removeCallbacks(lancerVeille);
+        if (veilleMinutes > 0) handler.postDelayed(lancerVeille, veilleMinutes * 60_000L);
+    }
 
     // Palette Orba
     static final int CYAN = 0xFF00E5FF, BLEU = 0xFF0078FF, INDIGO = 0xFF4B3DFF, VIOLET = 0xFFA64DFF;
@@ -99,6 +117,15 @@ public class MainActivity extends Activity {
     private LinearLayout rows;
     private OndesView ondes;
     private ReseauView reseau;
+    private View boutonReglages;
+
+    // Appui long sur la roue géré par Orba lui-même (fiable quelle que soit la télécommande)
+    private boolean okRoueEnfonce = false, okRoueLongTraite = false;
+    private final Runnable appuiLongRoue = new Runnable() {
+        @Override public void run() {
+            if (okRoueEnfonce) { okRoueLongTraite = true; montrerReglages(); }
+        }
+    };
 
     /** Met à jour l'icône réseau toutes les 10 s. */
     private final Runnable majReseau = new Runnable() {
@@ -153,6 +180,10 @@ public class MainActivity extends Activity {
             Collections.addAll(m, MASQUEES_PAR_DEFAUT);
             prefs.edit().putStringSet("masquees", m).putBoolean("init", true).apply();
         }
+        colonnes = prefs.getInt("colonnes", COLONNES_DEFAUT);
+        fondMode = prefs.getInt("fond", 0);
+        haloCyan = prefs.getBoolean("halo_cyan", false);
+        veilleMinutes = prefs.getInt("veille_minutes", 10);
 
         plus = new App();
         plus.pkg = PLUS;
@@ -164,6 +195,7 @@ public class MainActivity extends Activity {
         root.setBackgroundColor(NUIT);
 
         ondes = new OndesView(this);
+        ondes.setMode(fondMode);
         root.addView(ondes, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -214,8 +246,12 @@ public class MainActivity extends Activity {
         });
         ligne.addView(reseau, new LinearLayout.LayoutParams(dp(52), dp(52)));
         ReglagesView reglages = new ReglagesView(this);
+        boutonReglages = reglages;
         reglages.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { ouvrir(Settings.ACTION_SETTINGS); }
+        });
+        reglages.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override public boolean onLongClick(View v) { montrerReglages(); return true; }   // réglages Orba
         });
         LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(dp(52), dp(52));
         rp.leftMargin = dp(10);
@@ -334,6 +370,7 @@ public class MainActivity extends Activity {
         handler.post(mover);
         handler.removeCallbacks(majReseau);
         handler.post(majReseau);
+        relancerVeille();
     }
 
     @Override protected void onPause() {
@@ -342,6 +379,7 @@ public class MainActivity extends Activity {
         ondes.stop();
         handler.removeCallbacks(mover);
         handler.removeCallbacks(majReseau);
+        handler.removeCallbacks(lancerVeille);
     }
 
     @Override protected void onDestroy() {
@@ -518,6 +556,52 @@ public class MainActivity extends Activity {
         if (premier != null) premier.requestFocus();
     }
 
+    /** Réglages Orba (appui long sur la roue dentée). Chaque choix est appliqué tout de suite. */
+    private void montrerReglages() {
+        final String[] fonds = {"Vagues animées", "Vagues fixes", "Noir pur (OLED)"};
+        final String[] options = {
+                "Tuiles par ligne : " + colonnes,
+                "Fond : " + fonds[fondMode],
+                "Halo : " + (haloCyan ? "cyan Orba" : "couleur de l'appli"),
+                "Écran de veille : " + (veilleMinutes == 0 ? "désactivé" : "après " + veilleMinutes + " min"),
+                "Voir l'écran de veille",
+                "Applis masquées…",
+                "Paramètres de la télé"
+        };
+        choisir("Réglages Orba", options, new Choix() {
+            @Override public void choisi(int i) {
+                switch (i) {
+                    case 0: choisirValeur("Tuiles par ligne", new String[]{"4", "5", "6", "7"}, new Choix() {
+                        @Override public void choisi(int k) {
+                            colonnes = 4 + k; prefs.edit().putInt("colonnes", colonnes).apply();
+                            signature = ""; appliquerOrdre(); montrerReglages();
+                        } }); break;
+                    case 1: choisirValeur("Fond", fonds, new Choix() {
+                        @Override public void choisi(int k) {
+                            fondMode = k; prefs.edit().putInt("fond", k).apply();
+                            ondes.setMode(k); montrerReglages();
+                        } }); break;
+                    case 2: choisirValeur("Halo", new String[]{"Couleur de l'appli", "Cyan Orba"}, new Choix() {
+                        @Override public void choisi(int k) {
+                            haloCyan = k == 1; prefs.edit().putBoolean("halo_cyan", haloCyan).apply();
+                            signature = ""; appliquerOrdre(); montrerReglages();
+                        } }); break;
+                    case 3: final int[] minutes = {0, 5, 10, 20, 30};
+                        choisirValeur("Écran de veille", new String[]{"Désactivé", "Après 5 min", "Après 10 min", "Après 20 min", "Après 30 min"}, new Choix() {
+                        @Override public void choisi(int k) {
+                            veilleMinutes = minutes[k]; prefs.edit().putInt("veille_minutes", veilleMinutes).apply();
+                            relancerVeille(); montrerReglages();
+                        } }); break;
+                    case 4: startActivity(new Intent(MainActivity.this, VeilleActivity.class)); break;
+                    case 5: montrerMasquees(); break;
+                    default: ouvrir(Settings.ACTION_SETTINGS);
+                }
+            }
+        });
+    }
+
+    private void choisirValeur(String titre, String[] valeurs, Choix action) { choisir(titre, valeurs, action); }
+
     /** Menu de l'appui long : déplacer, masquer, réafficher. */
     private void menu(final App a) {
         final boolean protege = SETTINGS_PKG.equals(a.pkg);
@@ -525,11 +609,13 @@ public class MainActivity extends Activity {
         choix.add("Déplacer");
         if (!protege) choix.add("Masquer de l'accueil");
         choix.add("Applis masquées…");
+        choix.add("Réglages Orba…");
         choisir(a.label, choix.toArray(new String[0]), new Choix() {
             @Override public void choisi(int which) {
                 String c = choix.get(which);
                 if (c.startsWith("Déplacer")) commencerDeplacement(a);
                 else if (c.startsWith("Masquer")) masquer(a);
+                else if (c.startsWith("Réglages")) montrerReglages();
                 else montrerMasquees();
             }
         });
@@ -592,6 +678,26 @@ public class MainActivity extends Activity {
     /** Pendant un déplacement, les flèches font glisser la tuile dans la grille. */
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
+        relancerVeille();   // toute touche repousse l'écran de veille
+        // Roue dentée : OK court = paramètres de la télé, OK maintenu 0,6 s = Réglages Orba.
+        int kc = e.getKeyCode();
+        if ((kc == KeyEvent.KEYCODE_DPAD_CENTER || kc == KeyEvent.KEYCODE_ENTER || kc == KeyEvent.KEYCODE_NUMPAD_ENTER)
+                && boutonReglages != null && (boutonReglages.isFocused() || okRoueEnfonce)) {
+            if (e.getAction() == KeyEvent.ACTION_DOWN) {
+                if (e.getRepeatCount() == 0) {
+                    okRoueEnfonce = true; okRoueLongTraite = false;
+                    handler.postDelayed(appuiLongRoue, 600);
+                } else if (e.getRepeatCount() >= 3 && !okRoueLongTraite) {   // télécommande qui répète la touche
+                    handler.removeCallbacks(appuiLongRoue); appuiLongRoue.run();
+                }
+            } else if (e.getAction() == KeyEvent.ACTION_UP) {
+                handler.removeCallbacks(appuiLongRoue);
+                boolean longTraite = okRoueLongTraite;
+                okRoueEnfonce = false; okRoueLongTraite = false;
+                if (!longTraite) ouvrir(Settings.ACTION_SETTINGS);
+            }
+            return true;
+        }
         if (enDeplacement == null) return super.dispatchKeyEvent(e);
         int code = e.getKeyCode();
         if (e.getAction() != KeyEvent.ACTION_DOWN) {
@@ -605,8 +711,8 @@ public class MainActivity extends Activity {
         switch (code) {
             case KeyEvent.KEYCODE_DPAD_LEFT:  j = i - 1; break;
             case KeyEvent.KEYCODE_DPAD_RIGHT: j = i + 1; break;
-            case KeyEvent.KEYCODE_DPAD_UP:    j = i - COLONNES; break;
-            case KeyEvent.KEYCODE_DPAD_DOWN:  j = Math.min(i + COLONNES, apps.size() - 1); break;
+            case KeyEvent.KEYCODE_DPAD_UP:    j = i - colonnes; break;
+            case KeyEvent.KEYCODE_DPAD_DOWN:  j = Math.min(i + colonnes, apps.size() - 1); break;
             case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_ENTER:
             case KeyEvent.KEYCODE_BACK:
@@ -634,7 +740,7 @@ public class MainActivity extends Activity {
         List<App> tuiles = new ArrayList<>(apps);
         tuiles.add(plus);   // tuile « + » toujours en dernier
         for (int i = 0; i < tuiles.size(); i++) {
-            if (i % COLONNES == 0) {
+            if (i % colonnes == 0) {
                 row = new LinearLayout(this);
                 row.setOrientation(LinearLayout.HORIZONTAL);
                 row.setClipChildren(false);
@@ -662,7 +768,7 @@ public class MainActivity extends Activity {
         }
         // Compléter la dernière ligne pour garder 5 colonnes égales.
         if (row != null) {
-            for (int k = tuiles.size() % COLONNES; k != 0 && k < COLONNES; k++) {
+            for (int k = tuiles.size() % colonnes; k != 0 && k < colonnes; k++) {
                 row.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1f));
             }
         }
@@ -794,7 +900,7 @@ public class MainActivity extends Activity {
             setContentDescription(a.label);
             setOutlineProvider(null);       // pas d'ombre système quand on la passe au premier plan
             fond.setColor(a.fond);
-            lueur.setColor(a.halo);
+            lueur.setColor(haloCyan ? CYAN : a.halo);
             contour.setStyle(Paint.Style.STROKE);
             contour.setStrokeWidth(dp(2.5f));
             contour.setColor(CYAN);
@@ -1110,6 +1216,11 @@ public class MainActivity extends Activity {
         private final long t0 = SystemClock.uptimeMillis();
         private final float densite;
         private boolean running;
+        private int mode = 0;               // 0 = vagues animées, 1 = vagues fixes, 2 = noir pur (OLED)
+        private float attenuation = 1f;     // < 1 : vagues plus discrètes (écran de veille)
+
+        void setMode(int m) { mode = m; invalidate(); if (running && m != 0) removeCallbacks(tick); else if (running) post(tick); }
+        void setAttenuation(float a) { attenuation = a; }
 
         // base (hauteur), amplitude, fréquence, vitesse, phase, opacité de chaque vague
         private static final float[][] VAGUES = {
@@ -1121,7 +1232,7 @@ public class MainActivity extends Activity {
         private final Runnable tick = new Runnable() {
             @Override public void run() {
                 invalidate();
-                if (running) postDelayed(this, 40);   // ~25 images/s, mouvement lent et fluide
+                if (running && mode == 0) postDelayed(this, 40);   // ~25 images/s, mouvement lent et fluide
             }
         };
 
@@ -1144,7 +1255,7 @@ public class MainActivity extends Activity {
             fond.setShader(new LinearGradient(0, 0, 0, h, NUIT_CLAIR, NUIT, Shader.TileMode.CLAMP));
             halo.setShader(new RadialGradient(w * 0.88f, -h * 0.1f, w * 0.55f, 0x262A5BFF, 0x002A5BFF, Shader.TileMode.CLAMP));
             for (int i = 0; i < vague.length; i++) {
-                int a = ((int) VAGUES[i][5]) << 24;
+                int a = Math.round(VAGUES[i][5] * attenuation) << 24;
                 vague[i].setShader(new LinearGradient(0, 0, w, 0,
                         new int[]{a | (CYAN & 0xFFFFFF), a | (BLEU & 0xFFFFFF), a | (INDIGO & 0xFFFFFF), a | (VIOLET & 0xFFFFFF)},
                         new float[]{0f, 0.38f, 0.7f, 1f}, Shader.TileMode.CLAMP));
@@ -1152,8 +1263,9 @@ public class MainActivity extends Activity {
         }
 
         @Override protected void onDraw(Canvas c) {
-            float t = (SystemClock.uptimeMillis() - t0) / 1000f;
+            float t = mode == 0 ? (SystemClock.uptimeMillis() - t0) / 1000f : 0f;
             float W = getWidth(), H = getHeight();
+            if (mode == 2) { c.drawColor(Color.BLACK); return; }   // noir pur : pixels OLED éteints
             c.drawRect(0, 0, W, H, fond);
             c.save();
             c.translate(W * 0.03f * (float) Math.sin(t * 0.05), 0);   // la lueur dérive doucement
@@ -1173,7 +1285,7 @@ public class MainActivity extends Activity {
                 forme.lineTo(W, H);
                 forme.close();
                 c.drawPath(forme, vague[k]);
-                int a = (int) v[5];
+                int a = Math.round(v[5] * attenuation);
                 creteLueur.setColor(Color.argb(Math.min(255, a / 3), 0, 229, 255));
                 c.drawPath(ligne, creteLueur);
                 crete.setColor(Color.argb(Math.min(255, a + 90), 170, 240, 255));

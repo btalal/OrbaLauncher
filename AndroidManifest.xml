@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fr.maison.accueil"
-    android:versionCode="17"
-    android:versionName="3.5">
+    android:versionCode="18"
+    android:versionName="3.6">
 
     <uses-sdk android:minSdkVersion="28" android:targetSdkVersion="34" />
 
@@ -40,6 +40,25 @@
             <!-- Pas de catégorie HOME : Google TV l'ignore ; c'est le service
                  ToucheAccueilService qui redirige la touche Accueil. -->
         </activity>
+
+        <!-- Écran de veille Orba (lancé par Orba après inactivité) -->
+        <activity
+            android:name=".VeilleActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen"
+            android:screenOrientation="landscape" />
+
+        <!-- Le même écran, proposé comme économiseur d'écran Android -->
+        <service
+            android:name=".OrbaDream"
+            android:exported="true"
+            android:label="Orba"
+            android:permission="android.permission.BIND_DREAM_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
 
         <!-- Raccourci touche Accueil (à activer soi-même dans Paramètres > Accessibilité) -->
         <service
