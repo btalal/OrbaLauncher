@@ -143,14 +143,13 @@ Désactiver le service dans *Paramètres → Système → Accessibilité*, ou d�
 
 ## Téléviseurs et boîtiers testés
 
-| Marque / Appareil | Système | Statut |
+| Télé / boîtier | Système | Statut |
 |---|---|---|
-| **Philips OLED 65"** | Google TV / Android TV | ✅ Support complet (panneau Sources natif, vagues & veille OLED) |
-| **Google TV Streamer & Chromecast avec Google TV** | Google TV 12 / 14 | ✅ Support complet |
-| **Sony BRAVIA, TCL, Hisense** | Google TV / Android TV 8+ | ✅ Support complet |
-| **Xiaomi Mi Box / Mi TV & NVIDIA Shield** | Android TV 9+ / PatchWall | ✅ Support complet |
+| **Philips 65OLED908/12** | Google TV 14 | ✅ Testé au quotidien : touche Accueil, panneau Sources d'origine, écran de veille, réglages, français et anglais |
+| Autres télés et boîtiers Google TV / Android TV (Sony, TCL, Hisense, Xiaomi, NVIDIA Shield, Chromecast avec Google TV…) | Android 8.0 ou plus récent | ❔ Pas encore testé. Orba est prévu pour eux (il reconnaît les accueils d'origine `launcherx`, `tvlauncher`, `leanbacklauncher` et `com.mitv.tvhome` de Xiaomi), mais personne ne nous a encore fait de retour |
 
-*Vous utilisez Orba sur un autre modèle ? N'hésitez pas à le partager dans les [Issues](../../issues) ou les [Discussions](../../discussions) !*
+*Vous utilisez Orba sur un autre modèle ? Racontez-nous dans les [Discussions](../../discussions) ou avec un
+[signalement de bug](../../issues/new/choose), et votre télé rejoindra ce tableau.*
 
 ## Nettoyer sa télé (facultatif)
 

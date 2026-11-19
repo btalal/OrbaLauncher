@@ -141,14 +141,13 @@ Turn the service off in *Settings → System → Accessibility*, or uninstall Or
 
 ## Tested TVs & Boxes
 
-| Brand / Device | Platform | Status |
+| TV / box | System | Status |
 |---|---|---|
-| **Philips OLED 65"** | Google TV / Android TV | ✅ Full support (native Sources panel, OLED waves & screensaver) |
-| **Google TV Streamer & Chromecast with Google TV** | Google TV 12 / 14 | ✅ Full support |
-| **Sony BRAVIA, TCL, Hisense** | Google TV / Android TV 8+ | ✅ Full support |
-| **Xiaomi Mi Box / Mi TV & NVIDIA Shield** | Android TV 9+ / PatchWall | ✅ Full support |
+| **Philips 65OLED908/12** | Google TV 14 | ✅ Tested every day: Home key, native Sources panel, screensaver, settings, English and French |
+| Other Google TV / Android TV sets and boxes (Sony, TCL, Hisense, Xiaomi, NVIDIA Shield, Chromecast with Google TV…) | Android 8.0 or later | ❔ Not tested yet. Orba is built for them (stock launchers `launcherx`, `tvlauncher`, `leanbacklauncher` and Xiaomi's `com.mitv.tvhome` are recognised), but nobody has reported back |
 
-*Using Orba on another model? Feel free to share your feedback in [Issues](../../issues) or [Discussions](../../discussions)!*
+*Using Orba on another model? Tell us how it went in [Discussions](../../discussions) or with a
+[bug report](../../issues/new/choose), and your TV joins this table.*
 
 ## Clean up your TV (optional)
 
