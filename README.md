@@ -20,7 +20,7 @@ recommandations, pas de bandeaux « À regarder ensuite ».
 - **Accueil épuré** : logo, heure, date et une grille de 5 applications par ligne avec les logos d'origine.
 - **Halo lumineux** à la couleur de chaque appli quand on la sélectionne, et son nom affiché dessous.
 - **Fond animé** bleu nuit avec des vagues lumineuses cyan → violet ; elles bougent lentement, ce qui protège les écrans **OLED** du marquage.
-- **En-tête** avec l'icône **Wi-Fi** (force du signal ; un clic ouvre les réglages réseau) et la roue **Paramètres**.
+- **En-tête** avec le bouton **Sources** (HDMI, antenne… ; sur les Philips, ouvre le panneau Sources d'origine), l'icône **Wi-Fi** (force du signal ; un clic ouvre les réglages réseau) et la roue **Paramètres**.
 - **Organisation libre** : appui long sur OK sur une tuile → *Déplacer*, *Masquer de l'accueil* ou *Applis masquées…*. La tuile **+** permet de réafficher une appli masquée. L'ordre est mémorisé.
 - **Démarre en premier** : à l'allumage de la télé et sur la touche **Accueil** de la télécommande, c'est Orba qui s'affiche.
   **Appui long** sur Accueil : l'accueil Google TV d'origine reste accessible.
