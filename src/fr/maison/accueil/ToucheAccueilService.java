@@ -71,6 +71,13 @@ public class ToucheAccueilService extends AccessibilityService {
         f.addAction(Intent.ACTION_SCREEN_ON);
         f.addAction(Intent.ACTION_SCREEN_OFF);
         registerReceiver(ecran, f);
+        // Après l'allumage, l'accueil d'origine est déjà à l'écran quand le service démarre : aucun changement
+        // de fenêtre ne viendra le signaler. Juste après un démarrage, on affiche donc Orba directement.
+        if (SystemClock.elapsedRealtime() < 3 * 60_000L) {
+            handler.postDelayed(new Runnable() {
+                @Override public void run() { if (!accueilOrigineVoulu) remplacer(); }
+            }, 1500);
+        }
     }
 
     @Override

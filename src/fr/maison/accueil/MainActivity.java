@@ -101,6 +101,8 @@ public class MainActivity extends Activity {
     static final int CYAN = 0xFF00E5FF, BLEU = 0xFF0078FF, INDIGO = 0xFF4B3DFF, VIOLET = 0xFFA64DFF;
     static final int NUIT = 0xFF00020F, NUIT_CLAIR = 0xFF00062E, TUILE = 0xFF0C1640;   // bleu nuit du logo
     static final int TEXTE = 0xFFEAF0FF, TEXTE_DOUX = 0xFF8FA0C8;
+    // Force du signal Wi-Fi : tons adoucis pour rester lisibles et calmes sur le bleu nuit
+    static final int SIGNAL_VERT = 0xFF4ADE80, SIGNAL_JAUNE = 0xFFFACC15, SIGNAL_ROUGE = 0xFFF87171;
 
     static final class App {
         String pkg;
@@ -413,9 +415,51 @@ public class MainActivity extends Activity {
         loadApps();
     }
 
+    /**
+     * Appli au démarrage (Réglages Orba, désactivée par défaut) : au premier affichage d'Orba après un
+     * démarrage complet de la télé, ouvre l'appli choisie, une seule fois. Aucune autorisation : l'heure
+     * du démarrage se déduit de l'horloge (heure actuelle moins temps écoulé depuis le démarrage).
+     */
+    private void ouvrirAppliDemarrage() {
+        final String pkg = prefs.getString("appli_demarrage", "");
+        long demarrage = System.currentTimeMillis() - SystemClock.elapsedRealtime();
+        long dernier = prefs.getLong("dernier_demarrage", 0);
+        boolean nouveau = Math.abs(demarrage - dernier) > 120_000;   // marge : l'horloge peut se recaler
+        if (!nouveau) return;
+        prefs.edit().putLong("dernier_demarrage", demarrage).apply();
+        // Seulement juste après l'allumage (pas après une mise à jour d'Orba des heures plus tard).
+        if (pkg.isEmpty() || SystemClock.elapsedRealtime() > 10 * 60_000L) return;
+        final App a = cache.get(pkg);
+        if (a == null || a.intent == null) return;
+        handler.postDelayed(new Runnable() {
+            @Override public void run() { if (hasWindowFocus()) launch(a); }
+        }, 1500);
+    }
+
+    /** Choix de l'appli au démarrage : Orba seul, ou une appli installée. */
+    private void choisirAppliDemarrage() {
+        final List<App> liste = new ArrayList<>();
+        for (App a : toutes) if (!SETTINGS_PKG.equals(a.pkg)) liste.add(a);
+        String[] noms = new String[liste.size() + 1];
+        noms[0] = tr("Aucune (Orba seul)", "None (Orba only)");
+        for (int i = 0; i < liste.size(); i++) noms[i + 1] = liste.get(i).label;
+        choisir(tr("Au démarrage de la télé", "When the TV starts"), noms, new Choix() {
+            @Override public void choisi(int k) {
+                prefs.edit().putString("appli_demarrage", k == 0 ? "" : liste.get(k - 1).pkg).apply();
+                montrerReglages();
+            }
+        });
+    }
+
+    private String nomAppliDemarrage() {
+        App a = cache.get(prefs.getString("appli_demarrage", ""));
+        return a == null ? tr("Orba seul", "Orba only") : a.label;
+    }
+
     @Override protected void onResume() {
         super.onResume();
         loadApps();
+        ouvrirAppliDemarrage();
         ondes.start();
         handler.removeCallbacks(mover);
         handler.post(mover);
@@ -677,6 +721,7 @@ public class MainActivity extends Activity {
                 tr("Halo : ", "Glow: ") + (haloCyan ? tr("cyan Orba", "Orba cyan") : tr("couleur de l'appli", "app colour")),
                 tr("Écran de veille : ", "Screensaver: ") + (veilleMinutes == 0 ? tr("désactivé", "off") : tr("après ", "after ") + veilleMinutes + " min"),
                 tr("Voir l'écran de veille", "Preview screensaver"),
+                tr("Au démarrage : ", "On start-up: ") + nomAppliDemarrage(),
                 tr("Applis masquées…", "Hidden apps…"),
                 tr("Paramètres de la télé", "TV settings")
         };
@@ -710,7 +755,8 @@ public class MainActivity extends Activity {
                             relancerVeille(); montrerReglages();
                         } }); break;
                     case 4: startActivity(new Intent(MainActivity.this, VeilleActivity.class)); break;
-                    case 5: montrerMasquees(); break;
+                    case 5: choisirAppliDemarrage(); break;
+                    case 6: montrerMasquees(); break;
                     default: ouvrir(Settings.ACTION_SETTINGS);
                 }
             }
@@ -1354,13 +1400,22 @@ public class MainActivity extends Activity {
                 }
             } catch (Exception ignored) { }
             if (t != type || n != niveau) { type = t; niveau = n; invalidate(); }
-            String[] force = {"très faible", "faible", "bon", "excellent"};
-            setContentDescription(type == 2 ? "Réseau : câble Ethernet" : type == 1 ? "Wi-Fi : signal " + force[niveau] : "Hors ligne");
+            String[] force = estFr() ? new String[]{"très faible", "faible", "moyen", "fort"}
+                                     : new String[]{"very weak", "weak", "medium", "strong"};
+            setContentDescription(type == 2 ? tr("Réseau : câble Ethernet", "Network: Ethernet cable")
+                    : type == 1 ? tr("Wi-Fi : signal ", "Wi-Fi: signal ") + force[niveau] : tr("Hors ligne", "Offline"));
+        }
+
+        /** Couleur du Wi-Fi selon la force du signal : vert fort, jaune moyen, rouge faible ou hors ligne. */
+        private int couleurSignal() {
+            if (type == 2) return couleurIcone();          // câble : couleur normale
+            if (type == 0) return SIGNAL_ROUGE;            // hors ligne
+            return niveau >= 3 ? SIGNAL_VERT : niveau == 2 ? SIGNAL_JAUNE : SIGNAL_ROUGE;
         }
 
         @Override void dessiner(Canvas c, float x, float y, float t) {
             float k = t / 24f;
-            int coul = couleurIcone();
+            int coul = couleurSignal();
             int eteint = (coul & 0x00FFFFFF) | 0x50000000;   // arcs non atteints : très atténués
             trait.setStrokeWidth(1.8f * k);
             if (type == 2) {

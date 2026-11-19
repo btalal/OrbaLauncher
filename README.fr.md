@@ -27,7 +27,14 @@ recommandations, pas de bandeaux « À regarder ensuite ».
   <img src="docs/demo.gif" alt="Démonstration : navigation dans Orba et ouverture du bouton Sources" width="800">
 </p>
 
-## Nouveau dans la version 3.8 : le dock de favoris
+## Nouveau dans la version 3.9
+
+- **Appli au démarrage** (désactivée par défaut) : *Réglages Orba → Au démarrage* ouvre l'appli de votre choix une
+  fois après l'allumage de la télé (appli de box, télé en direct…). La touche Accueil ramène à Orba. Aucune
+  autorisation nécessaire.
+- **Couleurs du signal** : l'icône Wi-Fi passe au vert, au jaune ou au rouge selon la force du signal.
+
+## Version 3.8 : le dock de favoris
 
 Vos **4 applis préférées** s'affichent en grandes tuiles en haut d'Orba, et le nom de celle qui est
 sélectionnée apparaît en grand au-dessus. Appui long sur OK sur une tuile → **Ajouter aux favoris** (ou *Retirer

@@ -6,6 +6,17 @@ your tiles and settings are kept.
 
 ## [Unreleased]
 
+## [3.9] - 2026-11-19
+### Added
+- **App on start-up** (Orba settings → *On start-up*, off by default): after a full start of the TV, Orba opens
+  the chosen app once (e.g. a TV box or live TV app); Home brings Orba back. No permission needed. It does not
+  run when the TV only wakes from a light standby.
+- **Signal colours** on the Wi-Fi icon: green when strong, yellow when medium, red when weak or offline (soft tones
+  that suit the midnight-blue background). Ethernet keeps its normal colour.
+### Fixed
+- After a full restart of the TV, the stock home stayed on screen for about a minute before Orba replaced it (the
+  Home service starts after the stock home is already shown). Orba now appears a second or two after start-up.
+
 ## [3.8] - 2026-11-19
 ### Added
 - **Favourites dock**: up to 4 apps in large tiles above the grid, with the selected app's name in large type.
@@ -47,7 +58,8 @@ your tiles and settings are kept.
   animated waves), Wi-Fi and Settings icons, move and hide tiles, Home key shortcut through an accessibility
   service.
 
-[Unreleased]: https://github.com/btalal/orba/compare/v3.8...HEAD
+[Unreleased]: https://github.com/btalal/orba/compare/v3.9...HEAD
+[3.9]: https://github.com/btalal/orba/releases/tag/v3.9
 [3.8]: https://github.com/btalal/orba/releases/tag/v3.8
 [3.7]: https://github.com/btalal/orba/releases/tag/v3.7
 [3.6]: https://github.com/btalal/orba/releases/tag/v3.6

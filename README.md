@@ -26,7 +26,13 @@ Orba replaces the busy Google TV and Android TV home screen with a calm, readabl
   <img src="docs/demo.gif" alt="Demo: browsing Orba and opening the Sources button" width="800">
 </p>
 
-## New in version 3.8: the favourites dock
+## New in version 3.9
+
+- **App on start-up** (off by default): *Orba settings → On start-up* opens the app of your choice once after the TV
+  starts (a TV box app, live TV…). Press Home to get back to Orba. No permission needed.
+- **Signal colours**: the Wi-Fi icon turns green, yellow or red with the signal strength.
+
+## Version 3.8: the favourites dock
 
 Your **4 favourite apps** sit in large tiles at the top of Orba, and the selected one's name shows in large type
 above them. Long-press OK on any tile → **Add to favourites** (or *Remove from favourites*); *Move* reorders the
