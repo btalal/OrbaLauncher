@@ -149,7 +149,7 @@ app when it is signed with the same key.
 
 ## License and credits
 
-- Code under the **MIT license** (see [LICENSE](LICENSE)). The "Orba" name and logo are not covered by this license.
+- Code under the **MIT license** (see [LICENSE](LICENSE)). The "Orba" name and logo are not covered by this license (see [NOTICE](NOTICE)).
 - **[Inter](https://rsms.me/inter/)** and **[Montserrat](https://github.com/JulietaUla/Montserrat)** fonts — SIL Open Font License 1.1 (licences in `assets/`).
 - Settings and Wi-Fi icons adapted from **[Lucide](https://lucide.dev)** — ISC License.
 - App logos: provided by each installed app (trademarks of their respective owners).

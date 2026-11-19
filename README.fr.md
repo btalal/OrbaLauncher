@@ -149,7 +149,7 @@ s'installer par-dessus que si elle est signée avec la même clé.
 
 ## Licence et crédits
 
-- Code sous **licence MIT** (voir [LICENSE](LICENSE)). Le nom et le logo « Orba » ne sont pas couverts par cette licence.
+- Code sous **licence MIT** (voir [LICENSE](LICENSE)). Le nom et le logo « Orba » ne sont pas couverts par cette licence (voir [NOTICE](NOTICE)).
 - Polices **[Inter](https://rsms.me/inter/)** et **[Montserrat](https://github.com/JulietaUla/Montserrat)** — SIL Open Font License 1.1 (licences dans `assets/`).
 - Icônes Paramètres et Wi-Fi d'après **[Lucide](https://lucide.dev)** — licence ISC.
 - Logos des applications : ceux fournis par chaque application installée (marques de leurs propriétaires respectifs).

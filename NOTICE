@@ -1,0 +1,8 @@
+Orba
+Copyright (c) 2026 btalal
+
+Third-party components keep their own licenses:
+- Inter and Montserrat fonts (assets/): SIL Open Font License 1.1, see assets/LICENCE-*.txt
+- Settings and Wi-Fi icons adapted from Lucide (https://lucide.dev): ISC License
+
+The "Orba" name and logo identify this project and are not covered by the MIT license.
