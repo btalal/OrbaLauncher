@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & discussions
+    url: https://github.com/btalal/orba/discussions
+    about: Ask a question or share your TV setup / Poser une question ou partager votre installation
+  - name: Orba Tech on YouTube
+    url: https://www.youtube.com/@OrbaTechFR
+    about: Videos of every new version / Les vidéos de chaque nouvelle version

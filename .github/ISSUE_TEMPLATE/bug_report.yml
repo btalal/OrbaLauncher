@@ -1,0 +1,53 @@
+name: Bug report / Signaler un bug
+description: Something does not work as expected / Quelque chose ne marche pas comme prévu
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report! / Merci pour le signalement !
+        Please write in English or French. / Écrivez en anglais ou en français.
+  - type: input
+    id: tv
+    attributes:
+      label: TV or box model / Modèle de télé ou de box
+      placeholder: Philips 65OLED908/12
+    validations:
+      required: true
+  - type: input
+    id: android
+    attributes:
+      label: Android / Google TV version
+      placeholder: Google TV 14
+    validations:
+      required: true
+  - type: input
+    id: orba
+    attributes:
+      label: Orba version
+      description: Settings → Apps → Orba / Paramètres → Applications → Orba
+      placeholder: "3.7"
+    validations:
+      required: true
+  - type: dropdown
+    id: home
+    attributes:
+      label: How does Orba open? / Comment Orba s'ouvre-t-il ?
+      options:
+        - Accessibility service "Home key → Orba" / Service d'accessibilité
+        - Native Home (stock launcher disabled) / Accueil natif (launcher d'origine désactivé)
+        - From the app list only / Seulement depuis la liste des applis
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens? / Que se passe-t-il ?
+      description: Steps with the remote, what you expected, what you got. / Les touches appuyées, ce que vous attendiez, ce qui s'est passé.
+    validations:
+      required: true
+  - type: textarea
+    id: media
+    attributes:
+      label: Screenshot or video / Capture ou vidéo
+      description: Optional. Blur your Wi-Fi name and anything personal. / Facultatif. Floutez le nom de votre Wi-Fi et tout élément personnel.

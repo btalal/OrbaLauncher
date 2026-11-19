@@ -1,0 +1,66 @@
+# Builds orba.apk with build.ps1 (no Gradle).
+# - Every push and pull request: build check, signed with a throwaway key (artifact only, never released).
+# - A tag "v*" (e.g. v3.8): build signed with the original key and attach orba.apk to that release.
+#   Needs the repository secret ORBA_KEYSTORE_B64 (the base64 of cle-accueil.jks); without it the job stops,
+#   because an APK signed with another key cannot be installed over the existing app.
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Restore the signing key (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          ORBA_KEYSTORE_B64: ${{ secrets.ORBA_KEYSTORE_B64 }}
+        run: |
+          if (-not $env:ORBA_KEYSTORE_B64) { throw "Secret ORBA_KEYSTORE_B64 is missing: see CONTRIBUTING.md (Releases)." }
+          [IO.File]::WriteAllBytes("$PWD\cle-accueil.jks", [Convert]::FromBase64String($env:ORBA_KEYSTORE_B64))
+
+      - name: Build
+        shell: pwsh
+        run: |
+          if ("${{ github.ref }}" -like "refs/tags/v*") { ./build.ps1 -RequireKey } else { ./build.ps1 }
+          Copy-Item accueil-simple.apk orba.apk
+
+      - name: Check the version matches the tag (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}".TrimStart('v')
+          $name = ([xml](Get-Content AndroidManifest.xml)).manifest.versionName
+          if ($name -ne $tag) { throw "AndroidManifest.xml says versionName $name but the tag is v$tag" }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: orba-apk
+          path: orba.apk
+
+      - name: Attach orba.apk to the release (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ github.ref_name }}"
+          gh release view $tag 2>$null
+          if ($LASTEXITCODE -ne 0) { gh release create $tag --draft --title "Orba $($tag.TrimStart('v'))" --notes "See CHANGELOG.md." }
+          gh release upload $tag orba.apk --clobber

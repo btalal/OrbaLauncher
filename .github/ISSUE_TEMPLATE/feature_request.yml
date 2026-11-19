@@ -1,0 +1,26 @@
+name: Idea / Idée
+description: Suggest a feature or an improvement / Proposer une fonctionnalité ou une amélioration
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Orba stays simple, calm and offline: no ads, no Internet access, no tracking.
+        Orba reste simple, calme et hors ligne : pas de pub, pas d'accès à Internet, pas de pistage.
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea / Votre idée
+      description: What would you like Orba to do? / Que voudriez-vous qu'Orba fasse ?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why? / Pourquoi ?
+      description: The situation where you would use it. / La situation où vous vous en serviriez.
+  - type: input
+    id: tv
+    attributes:
+      label: TV or box model / Modèle de télé ou de box
+      description: Optional / Facultatif

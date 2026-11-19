@@ -27,10 +27,6 @@ recommandations, pas de bandeaux « À regarder ensuite ».
   <img src="docs/demo.gif" alt="Démonstration : navigation dans Orba et ouverture du bouton Sources" width="800">
 </p>
 
-<p align="center">
-  <img src="docs/capture-accueil.png" alt="Écran d'accueil Orba sur une Philips OLED 65 pouces" width="900">
-</p>
-
 ## Nouveau dans la version 3.7
 
 - 🌐 **Bilingue (Français & Anglais)** : Orba suit automatiquement la langue de la télé (français ou anglais) pour tous les menus, les réglages, la date et l'écran de veille.
@@ -156,6 +152,13 @@ Désactiver le service dans *Paramètres → Système → Accessibilité*, ou d�
 
 *Vous utilisez Orba sur un autre modèle ? N'hésitez pas à le partager dans les [Issues](../../issues) ou les [Discussions](../../discussions) !*
 
+## Nettoyer sa télé (facultatif)
+
+[`tools/`](tools/README.md#outils-de-nettoyage-de-la-télé) contient deux scripts PowerShell qui **désactivent**
+(sans jamais désinstaller) les applis inutiles d'une télé Android via ADB, avec sauvegarde et journal, et la liste
+testée sur la **Philips 65OLED908** : Samba TV et statistiques Philips, rapports Google, mode démo, Control4,
+Alexa, Play-Fi… Tout revient avec `tools\restore.ps1`.
+
 ## Construire l'APK soi-même (Windows)
 
 Aucun Gradle : l'APK est construit directement avec les outils du SDK Android en deux secondes.
@@ -172,6 +175,15 @@ Aucun Gradle : l'APK est construit directement avec les outils du SDK Android en
 **Elle n'est pas dans le dépôt** : la conserver précieusement, car une mise à jour ne peut
 s'installer par-dessus que si elle est signée avec la même clé.
 
+GitHub construit aussi l'APK à chaque envoi et à chaque pull request (onglet *Actions*), et joint un `orba.apk`
+signé à la version publiée quand une étiquette `v*` est envoyée (voir [CONTRIBUTING.md](CONTRIBUTING.md#releases-maintainer)).
+
+## Contribuer
+
+Idées, bugs et traductions sont les bienvenus : voir [CONTRIBUTING.md](CONTRIBUTING.md#contribuer-à-orba), les
+[formulaires de ticket](../../issues/new/choose) et les [Discussions](../../discussions). Les changements de chaque
+version sont dans [CHANGELOG.md](CHANGELOG.md).
+
 ## Organisation du code
 
 | Chemin | Rôle |
@@ -183,6 +195,8 @@ s'installer par-dessus que si elle est signée avec la même clé.
 | `assets/` | Polices Inter et Montserrat (licence OFL) |
 | `source-logo/` | Logo Orba d'origine (image et SVG) |
 | `build.ps1`, `icone.ps1`, `Logo.cs` | Construction de l'APK et génération des visuels |
+| `tools/` | Scripts de nettoyage de la télé et liste testée sur la Philips 65OLED908 |
+| `.github/` | Construction automatique de l'APK, formulaires de ticket et liste de vérification des pull requests |
 
 ## Licence et crédits
 

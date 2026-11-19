@@ -26,10 +26,6 @@ Orba replaces the busy Google TV and Android TV home screen with a calm, readabl
   <img src="docs/demo.gif" alt="Demo: browsing Orba and opening the Sources button" width="800">
 </p>
 
-<p align="center">
-  <img src="docs/capture-accueil.png" alt="Orba home screen on a 65-inch Philips OLED TV" width="900">
-</p>
-
 ## New in version 3.7
 
 - 🌐 **Bilingual (English & French)**: Orba automatically follows your TV's language (English or French) for all menus, settings, dates and the screensaver.
@@ -154,6 +150,13 @@ Turn the service off in *Settings → System → Accessibility*, or uninstall Or
 
 *Using Orba on another model? Feel free to share your feedback in [Issues](../../issues) or [Discussions](../../discussions)!*
 
+## Clean up your TV (optional)
+
+[`tools/`](tools/README.md) holds two PowerShell scripts that **disable** (never uninstall) the bloat of an
+Android TV over ADB, with a backup and a log, and the list tested on the **Philips 65OLED908**: Samba TV and
+Philips analytics, Google feedback, retail demo, Control4, Alexa, Play-Fi… Everything comes back with
+`tools\restore.ps1`.
+
 ## Build the APK yourself (Windows)
 
 No Gradle: the APK is built directly with the Android SDK tools in a couple of seconds.
@@ -170,6 +173,15 @@ No Gradle: the APK is built directly with the Android SDK tools in a couple of s
 **It is not in the repository**: keep it safe, because an update can only install over the existing
 app when it is signed with the same key.
 
+GitHub also builds the APK on every push and pull request (*Actions* tab), and attaches a signed `orba.apk` to
+the release when a `v*` tag is pushed (see [CONTRIBUTING.md](CONTRIBUTING.md#releases-maintainer)).
+
+## Contributing
+
+Ideas, bug reports and translations are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md), the
+[issue forms](../../issues/new/choose) and [Discussions](../../discussions). What changed in each version is in
+[CHANGELOG.md](CHANGELOG.md).
+
 ## Code layout
 
 | Path | Role |
@@ -181,6 +193,8 @@ app when it is signed with the same key.
 | `assets/` | Inter and Montserrat fonts (OFL licence) |
 | `source-logo/` | Original Orba logo (image and SVG) |
 | `build.ps1`, `icone.ps1`, `Logo.cs` | APK build and artwork generation |
+| `tools/` | TV cleanup scripts and the list tested on the Philips 65OLED908 |
+| `.github/` | Automatic APK build, issue forms and pull request checklist |
 
 ## License and credits
 

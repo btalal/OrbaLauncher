@@ -9,3 +9,5 @@ build/
 
 # Aperçus générés par icone.ps1 (les images du README sont dans docs/)
 apercu-*.png
+
+backup-*/
