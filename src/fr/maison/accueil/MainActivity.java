@@ -199,6 +199,13 @@ public class MainActivity extends Activity {
 
         // Wi-Fi, roue dentée, puis bloc heure + date : tous directement dans l'en-tête
         LinearLayout ligne = header;
+        SourcesView sources = new SourcesView(this);
+        sources.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { ouvrirSources(); }
+        });
+        LinearLayout.LayoutParams sp0 = new LinearLayout.LayoutParams(dp(52), dp(52));
+        sp0.rightMargin = dp(10);
+        ligne.addView(sources, sp0);
         reseau = new ReseauView(this);
         reseau.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
@@ -664,6 +671,48 @@ public class MainActivity extends Activity {
     }
 
     /** Ouvre le premier écran de réglages disponible parmi ceux proposés. */
+    /**
+     * Sources de la télé (HDMI, antenne…). Sur les Philips : le panneau Sources d'origine.
+     * Ailleurs : une liste des entrées de la télé dans une fenêtre Orba.
+     */
+    private void ouvrirSources() {
+        try {
+            startActivity(new Intent("org.droidtv.intent.action.SOURCE_LIST")
+                    .setPackage("org.droidtv.channels")
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            return;
+        } catch (Exception ignored) { }
+        final List<android.media.tv.TvInputInfo> entrees = new ArrayList<>();
+        try {
+            android.media.tv.TvInputManager tim = (android.media.tv.TvInputManager) getSystemService(TV_INPUT_SERVICE);
+            for (android.media.tv.TvInputInfo info : tim.getTvInputList()) {
+                if (info.isPassthroughInput() && !info.isHidden(this)) entrees.add(info);
+            }
+        } catch (Exception ignored) { }
+        if (entrees.isEmpty()) {
+            Toast.makeText(this, "Aucune source disponible sur cette télé", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String[] noms = new String[entrees.size()];
+        for (int i = 0; i < noms.length; i++) {
+            android.media.tv.TvInputInfo info = entrees.get(i);
+            CharSequence nom = info.loadCustomLabel(this);
+            if (nom == null || nom.length() == 0) nom = info.loadLabel(this);
+            noms[i] = String.valueOf(nom);
+        }
+        choisir("Sources", noms, new Choix() {
+            @Override public void choisi(int which) {
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            android.media.tv.TvContract.buildChannelUriForPassthroughInput(entrees.get(which).getId()))
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "Impossible d'ouvrir cette source", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
     private void ouvrir(String... actions) {
         for (String a : actions) {
             try {
@@ -948,6 +997,32 @@ public class MainActivity extends Activity {
      * indiquent la force du signal (0 à 3). Câble Ethernet si la télé est branchée,
      * Wi-Fi barré si elle est hors ligne. Un clic ouvre les réglages Wi-Fi.
      */
+    /** Bouton « Sources » au trait fin (téléviseur avec antenne, d'après Lucide « tv », licence ISC). */
+    final class SourcesView extends BoutonIcone {
+        private final Paint trait = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        SourcesView(Context c) {
+            super(c, "Sources de la télé (HDMI, antenne…)");
+            trait.setStyle(Paint.Style.STROKE);
+            trait.setStrokeCap(Paint.Cap.ROUND);
+            trait.setStrokeJoin(Paint.Join.ROUND);
+        }
+
+        @Override void dessiner(Canvas c, float x, float y, float t) {
+            float k = t / 24f;
+            trait.setStrokeWidth(1.8f * k);
+            trait.setColor(couleurIcone());
+            // écran : rect x2 y7 w20 h15 rx2
+            c.drawRoundRect(x + 2 * k, y + 7 * k, x + 22 * k, y + 22 * k, 2 * k, 2 * k, trait);
+            // antenne : polyline 17,2 12,7 7,2
+            Path p = new Path();
+            p.moveTo(x + 17 * k, y + 2 * k);
+            p.lineTo(x + 12 * k, y + 7 * k);
+            p.lineTo(x + 7 * k, y + 2 * k);
+            c.drawPath(p, trait);
+        }
+    }
+
     final class ReseauView extends BoutonIcone {
         private final Paint trait = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Paint point = new Paint(Paint.ANTI_ALIAS_FLAG);
