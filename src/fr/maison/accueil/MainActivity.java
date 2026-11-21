@@ -234,17 +234,17 @@ public class MainActivity extends Activity {
         android.widget.ImageView anneau = new android.widget.ImageView(this);
         anneau.setImageResource(getResources().getIdentifier("logo_anneau", "drawable", getPackageName()));
         anneau.setContentDescription("Orba");
-        header.addView(anneau, new LinearLayout.LayoutParams(dp(54), dp(54)));
+        header.addView(anneau, new LinearLayout.LayoutParams(dp(40), dp(40)));   // même taille que OrbaFlux et OrbaTV
         TextView nom = new TextView(this);
-        nom.setText("ORBA");
-        nom.setTypeface(gras);
-        nom.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);   // proportions de orba_logo_horizontal.svg
-        nom.setLetterSpacing(0.025f);
+        nom.setText("Orba");
+        nom.setTypeface(police("montserrat-500.ttf"));     // même écriture fine que OrbaTV : Montserrat Medium, « Orba » (plus de majuscules grasses)
+        nom.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);   // 0,55 × l'anneau (40 dp), comme OrbaFlux et OrbaTV
+        nom.setLetterSpacing(0.04f);
         nom.setTextColor(Color.WHITE);
         nom.setIncludeFontPadding(false);
         LinearLayout.LayoutParams np = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        np.leftMargin = dp(14);
+        np.leftMargin = dp(6);
         header.addView(nom, np);
 
         header.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1f));
