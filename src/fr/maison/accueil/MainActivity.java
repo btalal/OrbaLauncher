@@ -83,6 +83,7 @@ public class MainActivity extends Activity {
     private int colonnes = COLONNES_DEFAUT;   // 4 à 7 tuiles par ligne
     private int fondMode = 0;                 // 0 vagues animées, 1 vagues fixes, 2 noir pur
     private boolean haloCyan = false;         // halo : couleur de l'appli (false) ou cyan Orba (true)
+    private static boolean rouvrirReglages = false;   // après un changement de thème, l'activité est recréée puis rouvre les réglages
     private int veilleMinutes = 10;           // 0 = écran de veille Orba désactivé
 
     /** Lance l'écran de veille Orba après le délai d'inactivité choisi. */
@@ -190,11 +191,16 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-        interFin = police("inter-300.ttf");          // heure et date : Inter (choisie au début du projet)
-        gras = police("montserrat-800.ttf");         // ORBA et titres : Montserrat ExtraBold (police du logo)
-        moyen = police("montserrat-600.ttf");        // noms d'applis, section, menus : Montserrat SemiBold
-
         prefs = getSharedPreferences("accueil", MODE_PRIVATE);
+        Views.theme = Math.max(0, Math.min(2, prefs.getInt("theme", Views.GLOSSY)));   // Réglages Orba > Thème
+        interFin = police("inter-300.ttf");          // heure et date : Inter (choisie au début du projet)
+        if (Views.oled()) {                          // thème OLED : Inter partout, comme OrbaTV
+            gras = police("inter-500.ttf");
+            moyen = police("inter-500.ttf");
+        } else {
+            gras = police("montserrat-800.ttf");     // titres : Montserrat ExtraBold (police du logo)
+            moyen = police("montserrat-600.ttf");    // noms d'applis, section, menus : Montserrat SemiBold
+        }
         if (!prefs.getBoolean("init", false)) {
             Set<String> m = new HashSet<>();
             Collections.addAll(m, MASQUEES_PAR_DEFAUT);
@@ -212,10 +218,10 @@ public class MainActivity extends Activity {
         plus.halo = CYAN;
 
         FrameLayout root = new FrameLayout(this);
-        root.setBackgroundColor(NUIT);
+        root.setBackgroundColor(Views.fond());
 
         ondes = new OndesView(this);
-        ondes.setMode(fondMode);
+        ondes.setMode(Views.oled() ? 2 : fondMode);   // thème OLED : fond noir profond, sans vagues
         root.addView(ondes, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -228,6 +234,9 @@ public class MainActivity extends Activity {
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.setPadding(dp(7), 0, 0, 0);   // logo décalé d'environ 1 cm vers la droite (bord coupé par la télé)
+        header.setClipChildren(false);       // halo des boutons jamais rogné
+        header.setClipToPadding(false);
+        column.setClipChildren(false);
 
         // Logo Orba : anneau vectoriel (d'après orba_symbole.svg) + ORBA en Montserrat ExtraBold
         // (dessin vectoriel natif d'Android : res/drawable/logo_anneau.xml, rendu net à la taille exacte)
@@ -298,7 +307,7 @@ public class MainActivity extends Activity {
         date.setFormat12Hour("EEEE d MMMM");
         date.setTypeface(interFin);
         date.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        date.setTextColor(TEXTE_DOUX);
+        date.setTextColor(Views.doux());
         date.setGravity(Gravity.END);
         date.setPadding(0, dp(2), 0, 0);
         droite.addView(date, new LinearLayout.LayoutParams(
@@ -338,7 +347,9 @@ public class MainActivity extends Activity {
         nomFavori.setLetterSpacing(0.01f);
         nomFavori.setTextColor(TEXTE);
         nomFavori.setSingleLine(true);
-        nomFavori.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        nomFavori.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);   // nom trop long : il défile
+        nomFavori.setMarqueeRepeatLimit(-1);
+        nomFavori.setSelected(true);
         nomFavori.setIncludeFontPadding(false);
         nomFavori.setAlpha(0f);
         LinearLayout.LayoutParams nf = new LinearLayout.LayoutParams(
@@ -355,18 +366,37 @@ public class MainActivity extends Activity {
         contenu.addView(dock, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        // ---- Titre de section
+        // ---- Titre de section : pastille colorée + capitales espacées de la même couleur (charte OrbaTV)
+        LinearLayout titreSection = new LinearLayout(this);
+        titreSection.setOrientation(LinearLayout.HORIZONTAL);
+        titreSection.setGravity(Gravity.CENTER_VERTICAL);
         TextView section = new TextView(this);
-        section.setText(tr("Vos applications", "Your apps"));
         section.setTypeface(moyen);
-        section.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-        section.setTextColor(TEXTE_DOUX);
-        section.setLetterSpacing(0.02f);
+        section.setIncludeFontPadding(false);
+        LinearLayout.LayoutParams stp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        if (Views.theme == Views.ORBA) {     // thème Orba : titre sobre d'origine
+            section.setText(tr("Vos applications", "Your apps"));
+            section.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+            section.setTextColor(TEXTE_DOUX);
+            section.setLetterSpacing(0.02f);
+        } else {
+            View pastilleSection = new View(this);
+            pastilleSection.setBackground(new Views.Pastille());
+            titreSection.addView(pastilleSection, new LinearLayout.LayoutParams(dp(5), dp(18)));
+            section.setText(tr("Vos applications", "Your apps").toUpperCase(java.util.Locale.ROOT));
+            section.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            section.setTextColor(Views.oled() ? Views.AMBRE_CLAIR : 0xFF5AA9FF);   // bleu clair de la charte, ambre clair en OLED
+            section.setLetterSpacing(0.16f);
+            stp.setMarginStart(dp(10));
+        }
+        titreSection.addView(section, stp);
         LinearLayout.LayoutParams sl = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        sl.topMargin = dp(14);
-        sl.leftMargin = dp(14);
-        contenu.addView(section, sl);
+        sl.topMargin = dp(16);
+        sl.bottomMargin = dp(2);
+        sl.setMarginStart(dp(16));
+        contenu.addView(titreSection, sl);
 
         // ---- Grille
         rows = new LinearLayout(this);
@@ -387,12 +417,8 @@ public class MainActivity extends Activity {
         aide.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         aide.setTextColor(TEXTE);
         aide.setText(tr("Flèches : déplacer   ·   OK ou Retour : valider", "Arrows: move   ·   OK or Back: done"));
-        aide.setPadding(dp(20), dp(9), dp(20), dp(9));
-        GradientDrawable pastille = new GradientDrawable();
-        pastille.setColor(0xE60B1430);
-        pastille.setStroke(dp(1.5f), CYAN);
-        pastille.setCornerRadius(dp(22));
-        aide.setBackground(pastille);
+        aide.setPadding(dp(22), dp(11), dp(22), dp(11));
+        aide.setBackground(Views.verre(this, 22));
         aide.setVisibility(View.GONE);
         FrameLayout.LayoutParams ap = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -413,6 +439,12 @@ public class MainActivity extends Activity {
             registerReceiver(packageReceiver, filter);
         }
         loadApps();
+        if (rouvrirReglages) {
+            rouvrirReglages = false;
+            handler.postDelayed(new Runnable() {
+                @Override public void run() { if (!isFinishing()) montrerReglages(); }
+            }, 250);
+        }
     }
 
     /**
@@ -638,72 +670,80 @@ public class MainActivity extends Activity {
     interface Choix { void choisi(int index); }
 
     /** Fenêtre de choix aux couleurs d'Orba (bleu nuit, contour cyan sur l'option choisie). */
-    private void choisir(String titre, final String[] options, final Choix action) {
+    private void choisir(String titre, final String[] options, final Choix action) { choisir(titre, options, action, 0); }
+
+    /** Idem, avec l'option de départ (la valeur actuellement choisie) déjà sélectionnée à la télécommande. */
+    private void choisir(String titre, final String[] options, final Choix action, int depart) {
         final Dialog d = new Dialog(this);
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         LinearLayout panneau = new LinearLayout(this);
         panneau.setOrientation(LinearLayout.VERTICAL);
-        panneau.setPadding(dp(26), dp(24), dp(26), dp(20));
-        GradientDrawable fond = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{0xFF0E1A42, 0xFF070C20});
-        fond.setCornerRadius(dp(22));
-        fond.setStroke(dp(1), 0xFF22305F);
-        panneau.setBackground(fond);
+        panneau.setPadding(dp(18), dp(24), dp(18), dp(14));
+        panneau.setClipChildren(false);
+        panneau.setClipToPadding(false);
+        panneau.setBackground(Views.verre(this, 24));   // verre translucide d'OrbaTV
 
         TextView t = new TextView(this);
         t.setText(titre);
         t.setTypeface(gras);
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
         t.setTextColor(Color.WHITE);
-        panneau.addView(t);
+        t.setSingleLine(true);   // (titre de fenêtre)
+        t.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);   // titre trop long (nom d'appli) : il défile
+        t.setMarqueeRepeatLimit(-1);
+        t.setSelected(true);
+        LinearLayout.LayoutParams ttp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        ttp.setMarginStart(dp(8));
+        ttp.setMarginEnd(dp(8));
+        panneau.addView(t, ttp);
 
         View trait = new View(this);
-        GradientDrawable tr = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{CYAN, BLEU});
-        tr.setCornerRadius(dp(2));
-        trait.setBackground(tr);
-        LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(dp(40), dp(3));
+        trait.setBackground(new Views.Pastille());   // filet dégradé et glossy sous le titre
+        LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(dp(44), dp(4));
         tp.topMargin = dp(10);
-        tp.bottomMargin = dp(14);
+        tp.bottomMargin = dp(8);
+        tp.setMarginStart(dp(8));
         panneau.addView(trait, tp);
 
+        // Options : pilules glossy avec halo animé ; la marge du halo est incluse dans chaque option (jamais rogné)
+        LinearLayout liste = new LinearLayout(this);
+        liste.setOrientation(LinearLayout.VERTICAL);
+        liste.setClipChildren(false);
+        liste.setClipToPadding(false);
         TextView premier = null;
         for (int i = 0; i < options.length; i++) {
             final int idx = i;
-            TextView o = new TextView(this);
-            o.setText(options[i]);
-            o.setTypeface(moyen);
-            o.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-            o.setTextColor(TEXTE);
-            o.setPadding(dp(18), dp(13), dp(18), dp(13));
-            o.setFocusable(true);
-            o.setClickable(true);
-            GradientDrawable sel = new GradientDrawable();
-            sel.setColor(0xFF15245A);
-            sel.setStroke(dp(2), CYAN);
-            sel.setCornerRadius(dp(14));
-            StateListDrawable st = new StateListDrawable();
-            st.addState(new int[]{android.R.attr.state_focused}, sel);
-            st.addState(new int[]{}, new ColorDrawable(Color.TRANSPARENT));
-            o.setBackground(st);
+            Views.Option o = new Views.Option(this, options[i], moyen, 17, TEXTE);
             o.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) { d.dismiss(); action.choisi(idx); }
             });
-            LinearLayout.LayoutParams op = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            op.topMargin = dp(4);
-            panneau.addView(o, op);
-            if (premier == null) premier = o;
+            liste.addView(o, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            if (premier == null || i == depart) premier = o;
         }
 
+        // Seule la liste défile : le titre reste visible, et la fenêtre ne dépasse jamais ~86 % de l'écran
         ScrollView sv = new ScrollView(this);
         sv.setVerticalScrollBarEnabled(false);
-        sv.addView(panneau);
-        d.setContentView(sv);
+        sv.setClipChildren(false);
+        sv.setClipToPadding(false);
+        sv.addView(liste);
+        panneau.addView(sv, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        final int hauteurMax = Math.round(getResources().getDisplayMetrics().heightPixels * 0.86f);
+        FrameLayout cadre = new FrameLayout(this) {
+            @Override protected void onMeasure(int ws, int hs) {
+                super.onMeasure(ws, MeasureSpec.makeMeasureSpec(hauteurMax, MeasureSpec.AT_MOST));
+            }
+        };
+        cadre.addView(panneau, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        d.setContentView(cadre);
         Window w = d.getWindow();
         if (w != null) {
             w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            w.setLayout(dp(440), ViewGroup.LayoutParams.WRAP_CONTENT);
+            w.setLayout(dp(460), ViewGroup.LayoutParams.WRAP_CONTENT);
             w.setDimAmount(0.65f);
         }
         d.show();
@@ -715,7 +755,9 @@ public class MainActivity extends Activity {
         final String[] fonds = estFr()
                 ? new String[]{"Vagues animées", "Vagues fixes", "Noir pur (OLED)"}
                 : new String[]{"Animated waves", "Still waves", "Pure black (OLED)"};
+        final String[] themes = {"Orba", "Glossy", "OLED"};
         final String[] options = {
+                tr("Thème : ", "Theme: ") + themes[Views.theme],
                 tr("Tuiles par ligne : ", "Tiles per row: ") + colonnes,
                 tr("Fond : ", "Background: ") + fonds[fondMode],
                 tr("Halo : ", "Glow: ") + (haloCyan ? tr("cyan Orba", "Orba cyan") : tr("couleur de l'appli", "app colour")),
@@ -728,24 +770,34 @@ public class MainActivity extends Activity {
         choisir(tr("Réglages Orba", "Orba settings"), options, new Choix() {
             @Override public void choisi(int i) {
                 switch (i) {
-                    case 0: choisirValeur(tr("Tuiles par ligne", "Tiles per row"), new String[]{"4", "5", "6", "7"}, new Choix() {
+                    case 0: choisirValeur(tr("Thème", "Theme"),
+                            estFr() ? new String[]{"Orba (sobre)", "Glossy (verre et halo OrbaTV)", "OLED (noir profond, ambre)"}
+                                    : new String[]{"Orba (plain)", "Glossy (OrbaTV glass and glow)", "OLED (deep black, amber)"},
+                            new Choix() {
+                        @Override public void choisi(int k) {
+                            if (k == Views.theme) { montrerReglages(); return; }
+                            prefs.edit().putInt("theme", k).apply();
+                            rouvrirReglages = true;   // l'écran est reconstruit avec le nouveau thème, puis les réglages se rouvrent
+                            recreate();
+                        } }, Views.theme); break;
+                    case 1: choisirValeur(tr("Tuiles par ligne", "Tiles per row"), new String[]{"4", "5", "6", "7"}, new Choix() {
                         @Override public void choisi(int k) {
                             colonnes = 4 + k; prefs.edit().putInt("colonnes", colonnes).apply();
                             signature = ""; appliquerOrdre(); montrerReglages();
                         } }); break;
-                    case 1: choisirValeur(tr("Fond", "Background"), fonds, new Choix() {
+                    case 2: choisirValeur(tr("Fond", "Background"), fonds, new Choix() {
                         @Override public void choisi(int k) {
                             fondMode = k; prefs.edit().putInt("fond", k).apply();
-                            ondes.setMode(k); montrerReglages();
+                            ondes.setMode(Views.oled() ? 2 : k); montrerReglages();
                         } }); break;
-                    case 2: choisirValeur(tr("Halo", "Glow"),
+                    case 3: choisirValeur(tr("Halo", "Glow"),
                             estFr() ? new String[]{"Couleur de l'appli", "Cyan Orba"} : new String[]{"App colour", "Orba cyan"},
                             new Choix() {
                         @Override public void choisi(int k) {
                             haloCyan = k == 1; prefs.edit().putBoolean("halo_cyan", haloCyan).apply();
                             signature = ""; appliquerOrdre(); montrerReglages();
                         } }); break;
-                    case 3: final int[] minutes = {0, 5, 10, 20, 30};
+                    case 4: final int[] minutes = {0, 5, 10, 20, 30};
                         choisirValeur(tr("Écran de veille", "Screensaver"),
                                 estFr() ? new String[]{"Désactivé", "Après 5 min", "Après 10 min", "Après 20 min", "Après 30 min"}
                                         : new String[]{"Off", "After 5 min", "After 10 min", "After 20 min", "After 30 min"},
@@ -754,9 +806,9 @@ public class MainActivity extends Activity {
                             veilleMinutes = minutes[k]; prefs.edit().putInt("veille_minutes", veilleMinutes).apply();
                             relancerVeille(); montrerReglages();
                         } }); break;
-                    case 4: startActivity(new Intent(MainActivity.this, VeilleActivity.class)); break;
-                    case 5: choisirAppliDemarrage(); break;
-                    case 6: montrerMasquees(); break;
+                    case 5: startActivity(new Intent(MainActivity.this, VeilleActivity.class)); break;
+                    case 6: choisirAppliDemarrage(); break;
+                    case 7: montrerMasquees(); break;
                     default: ouvrir(Settings.ACTION_SETTINGS);
                 }
             }
@@ -764,6 +816,7 @@ public class MainActivity extends Activity {
     }
 
     private void choisirValeur(String titre, String[] valeurs, Choix action) { choisir(titre, valeurs, action); }
+    private void choisirValeur(String titre, String[] valeurs, Choix action, int depart) { choisir(titre, valeurs, action, depart); }
 
     /** Ouvre la fiche système de l'appli (Forcer l'arrêt, Vider le cache, Désinstaller). */
     private void infosAppli(App a) {
@@ -1151,7 +1204,10 @@ public class MainActivity extends Activity {
         final Paint voile = new Paint(Paint.ANTI_ALIAS_FLAG);
         final Paint nom = new Paint(Paint.ANTI_ALIAS_FLAG);
         final Paint signe = new Paint(Paint.ANTI_ALIAS_FLAG);
+        final Paint brillance = new Paint(Paint.ANTI_ALIAS_FLAG);
+        final Paint filet = new Paint(Paint.ANTI_ALIAS_FLAG);
         float focus = 0f;
+        long debutDefil;
         ValueAnimator anim;
 
         Tile(Context c, App a) { this(c, a, false); }
@@ -1165,12 +1221,12 @@ public class MainActivity extends Activity {
             setClickable(true);
             setContentDescription(a.label);
             setOutlineProvider(null);       // pas d'ombre système quand on la passe au premier plan
-            fond.setColor(a.fond);
-            lueur.setColor(haloCyan ? CYAN : a.halo);
+            fond.setColor(Views.oled() && a.fond == TUILE ? 0xFF17171B : a.fond);
+            lueur.setColor(haloCyan ? Views.accent() : a.halo);
             contour.setStyle(Paint.Style.STROKE);
             contour.setStrokeWidth(dp(2.5f));
-            contour.setColor(CYAN);
-            voile.setColor(NUIT);
+            contour.setColor(Views.accent());
+            voile.setColor(Views.fond());
             nom.setColor(TEXTE);
             nom.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 15, getResources().getDisplayMetrics()));
             nom.setTypeface(moyen);
@@ -1191,13 +1247,15 @@ public class MainActivity extends Activity {
             carte.set(marge, marge, w - marge, h - marge - hautNom);
             clip.reset();
             clip.addRoundRect(carte, rayon, rayon, Path.Direction.CW);
+            // Halo « cyan Orba » : dégradé signature cyan → bleu → violet, comme OrbaTV
+            if (haloCyan && Views.glossy()) lueur.setShader(Views.degrade(carte.left, carte.right));
         }
 
         @Override protected void onFocusChanged(boolean gain, int dir, Rect prev) {
             super.onFocusChanged(gain, dir, prev);
             if (anim != null) anim.cancel();
             anim = ValueAnimator.ofFloat(focus, gain ? 1f : 0f);
-            anim.setDuration(200);
+            anim.setDuration(Views.theme == Views.ORBA ? 200 : 140);   // zoom vif de la charte (~140 ms)
             anim.setInterpolator(new DecelerateInterpolator());
             anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override public void onAnimationUpdate(ValueAnimator va) {
@@ -1208,6 +1266,7 @@ public class MainActivity extends Activity {
                 }
             });
             anim.start();
+            debutDefil = android.os.SystemClock.uptimeMillis();   // le nom trop long repart du début
             setPivotX(getWidth() / 2f);
             setPivotY(carte.centerY());
             // Passer devant les voisines (et la ligne devant les autres lignes).
@@ -1233,13 +1292,14 @@ public class MainActivity extends Activity {
         }
 
         @Override protected void onDraw(Canvas c) {
-            // 1. Halo lumineux de la couleur de l'appli : couches de plus en plus larges et transparentes.
+            // 1. Halo lumineux (couleur de l'appli, ou dégradé Orba) qui respire doucement tant que la tuile est choisie.
             if (focus > 0.01f) {
-                for (int i = 10; i >= 1; i--) {
-                    float g = marge * i / 10f;
-                    lueur.setAlpha(Math.round(focus * 22f * (11 - i) / 10f));
-                    tmp.set(carte.left - g, carte.top - g, carte.right + g, carte.bottom + g);
-                    c.drawRoundRect(tmp, rayon + g, rayon + g, lueur);
+                if (Views.glossy()) {
+                    float souffle = Views.souffle();
+                    float ext = marge * (0.82f + 0.18f * souffle);
+                    Views.halo(c, carte, rayon, ext, focus * (0.78f + 0.22f * souffle), lueur, tmp, 10, 24);
+                } else {   // Orba et OLED : halo fixe (OLED un peu plus discret : pas de marquage de la dalle)
+                    Views.halo(c, carte, rayon, marge, focus * (Views.oled() ? 0.7f : 1f), lueur, tmp, 10, 22);
                 }
             }
 
@@ -1249,7 +1309,7 @@ public class MainActivity extends Activity {
             c.drawRect(carte, fond);
             if (app == plus) {
                 float s = carte.height() * 0.18f;
-                signe.setColor(focus > 0.5f ? CYAN : TEXTE_DOUX);
+                signe.setColor(focus > 0.5f ? Views.accent() : Views.doux());
                 c.drawLine(carte.centerX() - s, carte.centerY(), carte.centerX() + s, carte.centerY(), signe);
                 c.drawLine(carte.centerX(), carte.centerY() - s, carte.centerX(), carte.centerY() + s, signe);
             } else {
@@ -1272,22 +1332,39 @@ public class MainActivity extends Activity {
                 }
                 d.draw(c);
             }
-            // 3. Les tuiles non choisies sont légèrement atténuées.
+            // 3. Les tuiles non choisies sont légèrement atténuées ; la tuile choisie reçoit le reflet glossy.
             voile.setAlpha(Math.round((1f - focus) * 80f));
             c.drawRect(carte, voile);
+            if (focus > 0.01f && Views.theme != Views.ORBA) Views.reflet(c, carte, rayon, Math.round((Views.oled() ? 0x16 : 0x2C) * focus), brillance);
             c.restore();
+            // Glossy : filet « verre » blanc → cyan ; OLED : filet ambre net ; Orba : aucun filet
+            if (focus > 0.01f) {
+                if (Views.glossy()) Views.filet(c, carte, rayon, dp(1.5f), Math.round(0xB0 * focus), Math.round(0x90 * focus), filet);
+                else if (Views.oled()) Views.contour(c, carte, rayon, dp(2), Views.AMBRE, Math.round(255 * focus), filet);
+            }
 
-            // 4. Nom de l'appli sous la tuile choisie (pas de contour : le halo suffit). Dock : nom en grand au-dessus.
+            // 4. Nom de l'appli sous la tuile choisie. Trop long : il défile (400 ms d'attente, 45 dp/s, sans fin).
             if (focus > 0.01f && !dansDock) {
                 nom.setAlpha(Math.round(focus * 255));
                 String txt = app.label;
-                float max = getWidth() - dp(8);
-                if (nom.measureText(txt) > max) {
-                    while (txt.length() > 1 && nom.measureText(txt + "…") > max) txt = txt.substring(0, txt.length() - 1);
-                    txt = txt + "…";
+                float max = getWidth() - dp(8), lw = nom.measureText(txt), y = carte.bottom + dp(24);
+                if (lw <= max) {
+                    c.drawText(txt, getWidth() / 2f, y, nom);
+                } else {
+                    float ecart = dp(48), cycle = lw + ecart;
+                    long el = android.os.SystemClock.uptimeMillis() - debutDefil - 400;
+                    float dx = el <= 0 ? 0f : (el / 1000f * dp(45)) % cycle;
+                    float x0 = getWidth() / 2f - max / 2f;
+                    c.save();
+                    c.clipRect(x0, y - nom.getTextSize() * 1.3f, x0 + max, y + nom.getTextSize() * 0.5f);
+                    nom.setTextAlign(Paint.Align.LEFT);
+                    c.drawText(txt, x0 - dx, y, nom);
+                    c.drawText(txt, x0 - dx + cycle, y, nom);
+                    nom.setTextAlign(Paint.Align.CENTER);
+                    c.restore();
                 }
-                c.drawText(txt, getWidth() / 2f, carte.bottom + dp(24), nom);
             }
+            if (isFocused()) postInvalidateOnAnimation();   // halo qui respire et nom qui défile
         }
     }
 
@@ -1310,7 +1387,7 @@ public class MainActivity extends Activity {
             setContentDescription(description);
             disque.setColor(0xFF15245A);
             cercle.setStyle(Paint.Style.STROKE);
-            cercle.setColor(CYAN);
+            cercle.setColor(Views.accent());
             cercle.setStrokeWidth(dp(2));
         }
 
@@ -1333,13 +1410,40 @@ public class MainActivity extends Activity {
             return focus > 0.5f ? Color.WHITE : TEXTE;
         }
 
+        private final Paint halo = new Paint(Paint.ANTI_ALIAS_FLAG), brillance = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final RectF rond = new RectF(), tmp = new RectF();
+        private final Path clip = new Path();
+
         @Override protected void onDraw(Canvas c) {
+            // Halo dessiné hors du bouton : le parent ne le rogne pas (voir setClipChildren dans l'en-tête)
             float cx = getWidth() / 2f, cy = getHeight() / 2f, r = Math.min(getWidth(), getHeight()) / 2f - dp(1.5f);
-            if (focus > 0.01f) {
+            if (focus > 0.01f && !Views.glossy()) {
+                // Orba : disque bleu nuit cerclé de cyan ; OLED : disque sombre cerclé d'ambre (net, sans flou)
+                disque.setShader(null);
+                disque.setColor(Views.oled() ? 0xFF1C1C21 : 0xFF15245A);
                 disque.setAlpha(Math.round(focus * 255));
                 c.drawCircle(cx, cy, r, disque);
+                cercle.setShader(null);
+                cercle.setColor(Views.accent());
                 cercle.setAlpha(Math.round(focus * 255));
                 c.drawCircle(cx, cy, r, cercle);
+            } else if (focus > 0.01f) {
+                rond.set(cx - r, cy - r, cx + r, cy + r);
+                float s = Views.souffle();
+                halo.setShader(Views.degrade(rond.left, rond.right));
+                Views.halo(c, rond, r, dp(7) * (0.8f + 0.2f * s), focus * (0.75f + 0.25f * s), halo, tmp, 6, 30);
+                // disque de verre bleu nuit, reflet glossy, filet blanc → cyan
+                disque.setShader(new LinearGradient(0, rond.top, 0, rond.bottom, 0xFF16397A, Views.PANEL_FOCUS, Shader.TileMode.CLAMP));
+                disque.setAlpha(Math.round(focus * 255));
+                c.drawCircle(cx, cy, r, disque);
+                clip.reset();
+                clip.addCircle(cx, cy, r, Path.Direction.CW);
+                c.save();
+                c.clipPath(clip);
+                Views.reflet(c, rond, r, Math.round(0x40 * focus), brillance);
+                c.restore();
+                Views.filet(c, rond, r, dp(1.8f), Math.round(0xF0 * focus), Math.round(0xD0 * focus), cercle);
+                if (isFocused()) postInvalidateOnAnimation();
             }
             float t = Math.min(getWidth(), getHeight()) * 0.50f;   // taille de l'icône (zone 24x24)
             dessiner(c, cx - t / 2, cy - t / 2, t);
@@ -1541,7 +1645,7 @@ public class MainActivity extends Activity {
         @Override protected void onDraw(Canvas c) {
             float t = mode == 0 ? (SystemClock.uptimeMillis() - t0) / 1000f : 0f;
             float W = getWidth(), H = getHeight();
-            if (mode == 2) { c.drawColor(Color.BLACK); return; }   // noir pur : pixels OLED éteints
+            if (mode == 2) { c.drawColor(Views.oled() ? Views.OLED_FOND : Color.BLACK); return; }   // noir pur : pixels OLED éteints
             c.drawRect(0, 0, W, H, fond);
             c.save();
             c.translate(W * 0.03f * (float) Math.sin(t * 0.05), 0);   // la lueur dérive doucement

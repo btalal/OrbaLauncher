@@ -6,6 +6,15 @@ your tiles and settings are kept.
 
 ## [Unreleased]
 
+## [3.11] - 2026-11-23
+### Added
+- **Themes** (Orba settings → *Theme*, applied at once): **Orba** (the plain original look), **Glossy** (the OrbaTV
+  render: translucent glass, glossy highlights, a gradient cyan → blue → violet glow that gently breathes, gradient
+  section titles) and **OLED** (deep black `#0A0A0C`, amber accent, Inter type, no waves, sober glow, as in OrbaTV).
+  Glossy is the default; the choice is kept.
+### Changed
+- Focus on the header buttons, menus and tiles follows the chosen theme; long app names scroll instead of being cut.
+
 ## [3.10] - 2026-11-23
 ### Added
 - **Uninstall…** in the tile menu (long-press OK), for apps you installed yourself; Android's own confirmation
@@ -67,7 +76,8 @@ your tiles and settings are kept.
   animated waves), Wi-Fi and Settings icons, move and hide tiles, Home key shortcut through an accessibility
   service.
 
-[Unreleased]: https://github.com/btalal/orba/compare/v3.10...HEAD
+[Unreleased]: https://github.com/btalal/orba/compare/v3.11...HEAD
+[3.11]: https://github.com/btalal/orba/releases/tag/v3.11
 [3.10]: https://github.com/btalal/orba/releases/tag/v3.10
 [3.9]: https://github.com/btalal/orba/releases/tag/v3.9
 [3.8]: https://github.com/btalal/orba/releases/tag/v3.8
