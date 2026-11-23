@@ -6,6 +6,15 @@ your tiles and settings are kept.
 
 ## [Unreleased]
 
+## [3.10] - 2026-11-23
+### Added
+- **Uninstall…** in the tile menu (long-press OK), for apps you installed yourself; Android's own confirmation
+  window appears before anything is removed. System apps don't show the option.
+### Fixed
+- **Smooth screensaver**: the logo, time and date no longer stutter or shimmer. They are drawn once into
+  graphics layers (the text once a minute) and only moved, rotated and faded by the GPU: 60 frames per second
+  measured on a Philips OLED.
+
 ## [3.9] - 2026-11-19
 ### Added
 - **App on start-up** (Orba settings → *On start-up*, off by default): after a full start of the TV, Orba opens
@@ -58,7 +67,8 @@ your tiles and settings are kept.
   animated waves), Wi-Fi and Settings icons, move and hide tiles, Home key shortcut through an accessibility
   service.
 
-[Unreleased]: https://github.com/btalal/orba/compare/v3.9...HEAD
+[Unreleased]: https://github.com/btalal/orba/compare/v3.10...HEAD
+[3.10]: https://github.com/btalal/orba/releases/tag/v3.10
 [3.9]: https://github.com/btalal/orba/releases/tag/v3.9
 [3.8]: https://github.com/btalal/orba/releases/tag/v3.8
 [3.7]: https://github.com/btalal/orba/releases/tag/v3.7

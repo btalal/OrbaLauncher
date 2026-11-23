@@ -1,4 +1,4 @@
-﻿# Construit accueil-simple.apk sans Gradle, avec les outils du SDK Android.
+# Construit orbalauncher.apk sans Gradle, avec les outils du SDK Android.
 # Sur un PC : SDK dans %LOCALAPPDATA%\Android\Sdk et JDK d'Android Studio.
 # Sur GitHub Actions : ANDROID_HOME / JAVA_HOME fournis par le runner, et -RequireKey pour refuser
 # de créer une nouvelle clé (un APK signé avec une autre clé ne s'installe pas par-dessus).
@@ -42,9 +42,9 @@ $ks = "$here\cle-accueil.jks"
 if (-not (Test-Path $ks)) {
     if ($RequireKey) { throw "cle-accueil.jks absente : impossible de signer avec la clé d'origine" }
     & "$jbr\keytool.exe" -genkeypair -keystore $ks -alias accueil -keyalg RSA -keysize 2048 -validity 10000 `
-        -storepass accueil-local -keypass accueil-local -dname "CN=Accueil simple" | Out-Null
+        -storepass accueil-local -keypass accueil-local -dname "CN=OrbaLauncher" | Out-Null
 }
-& "$bt\apksigner.bat" sign --ks $ks --ks-pass pass:accueil-local --key-pass pass:accueil-local --out "$here\accueil-simple.apk" "$out\aligned.apk"
+& "$bt\apksigner.bat" sign --ks $ks --ks-pass pass:accueil-local --key-pass pass:accueil-local --out "$here\orbalauncher.apk" "$out\aligned.apk"
 if ($LASTEXITCODE) { throw "apksigner a échoué" }
-& "$bt\apksigner.bat" verify "$here\accueil-simple.apk"
-"OK : $here\accueil-simple.apk"
+& "$bt\apksigner.bat" verify "$here\orbalauncher.apk"
+"OK : $here\orbalauncher.apk"

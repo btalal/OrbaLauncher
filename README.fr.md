@@ -27,7 +27,14 @@ recommandations, pas de bandeaux « À regarder ensuite ».
   <img src="docs/demo.gif" alt="Démonstration : navigation dans Orba et ouverture du bouton Sources" width="800">
 </p>
 
-## Nouveau dans la version 3.9
+## Nouveau dans la version 3.10
+
+- **Désinstaller…** dans le menu des tuiles (appui long sur OK), pour les applis que vous avez installées. Android
+  demande d'abord confirmation ; l'option n'apparaît pas pour les applis système.
+- **Écran de veille plus fluide** : le logo, l'heure et la date glissent à 60 images par seconde, sans saccade ni
+  scintillement.
+
+## Version 3.9
 
 - **Appli au démarrage** (désactivée par défaut) : *Réglages Orba → Au démarrage* ouvre l'appli de votre choix une
   fois après l'allumage de la télé (appli de box, télé en direct…). La touche Accueil ramène à Orba. Aucune
@@ -180,7 +187,7 @@ Aucun Gradle : l'APK est construit directement avec les outils du SDK Android en
 - Le JDK fourni avec Android Studio (`C:\Program Files\Android\Android Studio\jbr`)
 
 ```powershell
-.\build.ps1        # compile, assemble, aligne et signe -> accueil-simple.apk
+.\build.ps1        # compile, assemble, aligne et signe -> orbalauncher.apk
 .\icone.ps1        # (re)génère l'icône, la bannière et le logo depuis source-logo\
 ```
 

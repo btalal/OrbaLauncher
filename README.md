@@ -26,7 +26,13 @@ Orba replaces the busy Google TV and Android TV home screen with a calm, readabl
   <img src="docs/demo.gif" alt="Demo: browsing Orba and opening the Sources button" width="800">
 </p>
 
-## New in version 3.9
+## New in version 3.10
+
+- **Uninstall…** in the tile menu (long-press OK) for the apps you installed. Android asks for confirmation first;
+  system apps don't show the option.
+- **Smoother screensaver**: the logo, time and date glide at 60 frames per second without stuttering or shimmering.
+
+## Version 3.9
 
 - **App on start-up** (off by default): *Orba settings → On start-up* opens the app of your choice once after the TV
   starts (a TV box app, live TV…). Press Home to get back to Orba. No permission needed.
@@ -176,7 +182,7 @@ No Gradle: the APK is built directly with the Android SDK tools in a couple of s
 - The JDK bundled with Android Studio (`C:\Program Files\Android\Android Studio\jbr`)
 
 ```powershell
-.\build.ps1        # compile, package, align and sign -> accueil-simple.apk
+.\build.ps1        # compile, package, align and sign -> orbalauncher.apk
 .\icone.ps1        # (re)generate the icon, banner and logo from source-logo\
 ```
 

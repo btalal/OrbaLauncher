@@ -16,7 +16,7 @@ tracking. Ideas and bug reports are as welcome as code.
 1. Fork the repository and create a branch.
 2. Build with `.\build.ps1` (Windows, Android SDK and Android Studio's JDK, see the README). The script creates a
    local signing key the first time; keep it out of the repository (`*.jks` is ignored).
-3. Install on a real TV with `adb install -r accueil-simple.apk` and check your change with the remote: every
+3. Install on a real TV with `adb install -r orbalauncher.apk` and check your change with the remote: every
    direction from every edge, and the Home key.
 4. Keep to the house rules:
    - no new permission, no network access, no background service;

@@ -776,7 +776,30 @@ public class MainActivity extends Activity {
         }
     }
 
-    /** Menu de l'appui long : déplacer, infos sur l'appli, masquer, réafficher. */
+    /** Vrai si l'appli peut être désinstallée : installée par l'utilisateur, pas une appli système. */
+    private boolean desinstallable(App a) {
+        try {
+            android.content.pm.ApplicationInfo ai = getPackageManager().getApplicationInfo(a.pkg, 0);
+            return (ai.flags & android.content.pm.ApplicationInfo.FLAG_SYSTEM) == 0;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Désinstallation par la fenêtre de confirmation d'Android : rien n'est supprimé sans un « OK »
+     * de l'utilisateur. Une fois l'appli partie, la grille se met à jour seule (packageReceiver).
+     */
+    private void desinstaller(App a) {
+        try {
+            startActivity(new Intent(Intent.ACTION_DELETE, android.net.Uri.fromParts("package", a.pkg, null))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (Exception e) {
+            infosAppli(a);   // pas de fenêtre de désinstallation sur cette télé : la fiche de l'appli propose le bouton
+        }
+    }
+
+    /** Menu de l'appui long : déplacer, favoris, infos, désinstaller, masquer, réafficher. */
     private void menu(final App a) {
         final boolean protege = SETTINGS_PKG.equals(a.pkg);
         final List<String> choix = new ArrayList<>();
@@ -787,6 +810,7 @@ public class MainActivity extends Activity {
             else { choix.add(tr("Ajouter aux favoris", "Add to favourites")); codes.add(5); }
         }
         if (!protege) { choix.add(tr("Infos sur l'appli…", "App info…")); codes.add(1); }
+        if (!protege && desinstallable(a)) { choix.add(tr("Désinstaller…", "Uninstall…")); codes.add(6); }
         if (!protege) { choix.add(tr("Masquer de l'accueil", "Hide from home")); codes.add(2); }
         choix.add(tr("Applis masquées…", "Hidden apps…")); codes.add(3);
         choix.add(tr("Réglages Orba…", "Orba settings…")); codes.add(4);
@@ -799,6 +823,7 @@ public class MainActivity extends Activity {
                     case 3: montrerMasquees(); break;
                     case 4: montrerReglages(); break;
                     case 5: basculerFavori(a); break;
+                    case 6: desinstaller(a); break;
                 }
             }
         });

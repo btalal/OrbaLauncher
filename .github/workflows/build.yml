@@ -39,7 +39,7 @@ jobs:
         shell: pwsh
         run: |
           if ("${{ github.ref }}" -like "refs/tags/v*") { ./build.ps1 -RequireKey } else { ./build.ps1 }
-          Copy-Item accueil-simple.apk orba.apk
+          Copy-Item orbalauncher.apk orba.apk
 
       - name: Check the version matches the tag (tags only)
         if: startsWith(github.ref, 'refs/tags/v')
