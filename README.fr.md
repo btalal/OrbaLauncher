@@ -10,9 +10,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/btalal/orba/releases/latest"><img src="https://img.shields.io/github/v/release/btalal/orba?style=flat&label=version&color=00E5FF&labelColor=0A1433" alt="Version"></a>
-  <a href="https://github.com/btalal/orba/releases"><img src="https://img.shields.io/github/downloads/btalal/orba/total?style=flat&label=t%C3%A9l%C3%A9chargements&color=0078FF&labelColor=0A1433" alt="Téléchargements"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/btalal/orba?style=flat&label=licence&color=4B3DFF&labelColor=0A1433" alt="Licence MIT"></a>
+  <a href="https://github.com/btalal/OrbaLauncher/releases/latest"><img src="https://img.shields.io/github/v/release/btalal/OrbaLauncher?style=flat&label=version&color=00E5FF&labelColor=0A1433" alt="Version"></a>
+  <a href="https://github.com/btalal/OrbaLauncher/releases"><img src="https://img.shields.io/github/downloads/btalal/OrbaLauncher/total?style=flat&label=t%C3%A9l%C3%A9chargements&color=0078FF&labelColor=0A1433" alt="Téléchargements"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/btalal/OrbaLauncher?style=flat&label=licence&color=4B3DFF&labelColor=0A1433" alt="Licence MIT"></a>
   <img src="https://img.shields.io/badge/Android%20TV-8%2B-A64DFF?style=flat&labelColor=0A1433" alt="Android TV 8+">
   <a href="https://www.youtube.com/@OrbaTechFR"><img src="https://img.shields.io/badge/YouTube-Orba%20Tech-FF0000?style=flat&logo=youtube&logoColor=white&labelColor=0A1433" alt="Chaîne YouTube Orba Tech"></a>
 </p>

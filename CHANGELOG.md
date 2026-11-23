@@ -1,10 +1,15 @@
 # Changelog
 
 All notable changes to Orba. Download the latest version from the
-[Releases](https://github.com/btalal/orba/releases/latest) page; install `orba.apk` over the previous one,
+[Releases](https://github.com/btalal/OrbaLauncher/releases/latest) page; install `orba.apk` over the previous one,
 your tiles and settings are kept.
 
 ## [Unreleased]
+
+## [3.11.1] - 2026-11-23
+### Changed
+- The **screensaver** follows the chosen theme: deep black with a soft amber glow in OLED (no waves), unchanged in Orba and Glossy.
+- The repository is now named **OrbaLauncher** (old links keep working).
 
 ## [3.11] - 2026-11-23
 ### Added
@@ -76,12 +81,13 @@ your tiles and settings are kept.
   animated waves), Wi-Fi and Settings icons, move and hide tiles, Home key shortcut through an accessibility
   service.
 
-[Unreleased]: https://github.com/btalal/orba/compare/v3.11...HEAD
-[3.11]: https://github.com/btalal/orba/releases/tag/v3.11
-[3.10]: https://github.com/btalal/orba/releases/tag/v3.10
-[3.9]: https://github.com/btalal/orba/releases/tag/v3.9
-[3.8]: https://github.com/btalal/orba/releases/tag/v3.8
-[3.7]: https://github.com/btalal/orba/releases/tag/v3.7
-[3.6]: https://github.com/btalal/orba/releases/tag/v3.6
-[3.5]: https://github.com/btalal/orba/releases/tag/v3.5
-[3.4]: https://github.com/btalal/orba/releases/tag/v3.4
+[Unreleased]: https://github.com/btalal/OrbaLauncher/compare/v3.11.1...HEAD
+[3.11.1]: https://github.com/btalal/OrbaLauncher/releases/tag/v3.11.1
+[3.11]: https://github.com/btalal/OrbaLauncher/releases/tag/v3.11
+[3.10]: https://github.com/btalal/OrbaLauncher/releases/tag/v3.10
+[3.9]: https://github.com/btalal/OrbaLauncher/releases/tag/v3.9
+[3.8]: https://github.com/btalal/OrbaLauncher/releases/tag/v3.8
+[3.7]: https://github.com/btalal/OrbaLauncher/releases/tag/v3.7
+[3.6]: https://github.com/btalal/OrbaLauncher/releases/tag/v3.6
+[3.5]: https://github.com/btalal/OrbaLauncher/releases/tag/v3.5
+[3.4]: https://github.com/btalal/OrbaLauncher/releases/tag/v3.4

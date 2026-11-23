@@ -6,8 +6,8 @@ Thank you for helping! Orba stays small on purpose: plain Java, no Gradle, no In
 tracking. Ideas and bug reports are as welcome as code.
 
 ## Ideas, questions, bugs
-- **A question or an idea to discuss:** [Discussions](https://github.com/btalal/orba/discussions).
-- **A bug or a precise feature request:** [open an issue](https://github.com/btalal/orba/issues/new/choose) and
+- **A question or an idea to discuss:** [Discussions](https://github.com/btalal/OrbaLauncher/discussions).
+- **A bug or a precise feature request:** [open an issue](https://github.com/btalal/OrbaLauncher/issues/new/choose) and
   fill in the form. Always give the TV model, Android / Google TV version and Orba version (*Settings → Apps →
   Orba*).
 - Suggestions from the [Orba Tech](https://www.youtube.com/@OrbaTechFR) YouTube comments end up here too.
@@ -39,7 +39,7 @@ only **disables** (never uninstalls). See [tools/README.md](tools/README.md).
 3. One-time setup: the original key must be stored as the repository secret `ORBA_KEYSTORE_B64`. From the
    folder that holds `cle-accueil.jks`, with the GitHub CLI logged in:
    ```powershell
-   [Convert]::ToBase64String([IO.File]::ReadAllBytes("$PWD\cle-accueil.jks")) | gh secret set ORBA_KEYSTORE_B64 -R btalal/orba
+   [Convert]::ToBase64String([IO.File]::ReadAllBytes("$PWD\cle-accueil.jks")) | gh secret set ORBA_KEYSTORE_B64 -R btalal/OrbaLauncher
    ```
    Without that secret the tag build stops instead of signing with a new key (an APK signed with another key
    cannot be installed over the existing app).
@@ -56,8 +56,8 @@ are not covered by it (see [NOTICE](NOTICE)).
 Merci de votre aide ! Orba reste volontairement léger : Java simple, sans Gradle, sans accès à Internet, sans
 pistage. Les idées et les signalements de bugs comptent autant que le code.
 
-- **Une question, une idée à discuter :** [Discussions](https://github.com/btalal/orba/discussions).
-- **Un bug ou une demande précise :** [ouvrir un ticket](https://github.com/btalal/orba/issues/new/choose) et
+- **Une question, une idée à discuter :** [Discussions](https://github.com/btalal/OrbaLauncher/discussions).
+- **Un bug ou une demande précise :** [ouvrir un ticket](https://github.com/btalal/OrbaLauncher/issues/new/choose) et
   remplir le formulaire, avec le modèle de télé, la version d'Android / Google TV et la version d'Orba.
 - **Du code :** forkez le dépôt, construisez avec `.\build.ps1`, testez sur une vraie télé avec la télécommande,
   gardez les règles ci-dessus (aucune nouvelle permission, aucun accès réseau, textes en anglais **et** en

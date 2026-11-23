@@ -30,10 +30,13 @@ final class Veille {
 
     /** Vue complète de la veille : vagues atténuées + logo, heure et date animés. */
     static FrameLayout creer(Context c) {
+        // Le thème choisi dans les réglages (la veille peut démarrer dans un processus neuf ou comme économiseur Android)
+        Views.theme = Math.max(0, Math.min(2, c.getSharedPreferences("accueil", Context.MODE_PRIVATE).getInt("theme", Views.GLOSSY)));
         FrameLayout racine = new FrameLayout(c);
-        racine.setBackgroundColor(MainActivity.NUIT);
+        racine.setBackgroundColor(Views.fond());
         MainActivity.OndesView ondes = new MainActivity.OndesView(c);
         ondes.setAttenuation(0.45f);                  // vagues plus discrètes la nuit
+        if (Views.oled()) ondes.setMode(2);           // thème OLED : noir profond, sans vagues
         racine.addView(ondes, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         racine.addView(new Horloge(c), new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         racine.setTag(ondes);
@@ -163,7 +166,10 @@ final class Veille {
             private final int r;
             Halo(Context c, int r) { super(c); this.r = r; }
             @Override protected void onSizeChanged(int w, int h, int ow, int oh) {
-                p.setShader(new RadialGradient(w / 2f, h / 2f, r, Color.argb(85, 0, 150, 255), 0x000096FF, Shader.TileMode.CLAMP));
+                if (Views.oled())   // OLED : lueur ambre, plus discrète
+                    p.setShader(new RadialGradient(w / 2f, h / 2f, r, Color.argb(60, 255, 194, 77), 0x00FFC24D, Shader.TileMode.CLAMP));
+                else
+                    p.setShader(new RadialGradient(w / 2f, h / 2f, r, Color.argb(85, 0, 150, 255), 0x000096FF, Shader.TileMode.CLAMP));
             }
             @Override protected void onDraw(Canvas c) { c.drawCircle(getWidth() / 2f, getHeight() / 2f, r, p); }
         }
@@ -197,15 +203,15 @@ final class Veille {
                 super(c);
                 pHeure.setTypeface(police(c, "inter-200.ttf", Typeface.create("sans-serif-thin", Typeface.NORMAL)));
                 pHeure.setTextSize(sp(c, 72));
-                pHeure.setColor(0xFFD6DEF2);               // pas de blanc pur : moins d'usure OLED
+                pHeure.setColor(Views.oled() ? 0xFFDADADF : 0xFFD6DEF2);   // pas de blanc pur : moins d'usure OLED
                 pHeure.setTextAlign(Paint.Align.CENTER);
                 pDate.setTypeface(police(c, "inter-300.ttf", Typeface.DEFAULT));
                 pDate.setTextSize(sp(c, 20));
-                pDate.setColor(0xFF7F8DB3);
+                pDate.setColor(Views.oled() ? 0xFF8C8C96 : 0xFF7F8DB3);
                 pDate.setTextAlign(Paint.Align.CENTER);
                 pMarque.setTypeface(police(c, "montserrat-800.ttf", Typeface.DEFAULT_BOLD));
                 pMarque.setTextSize(sp(c, 13));
-                pMarque.setColor(0x66A9B8DD);
+                pMarque.setColor(Views.oled() ? 0x80FFC24D : 0x66A9B8DD);
                 pMarque.setLetterSpacing(0.6f);
                 pMarque.setTextAlign(Paint.Align.CENTER);
             }

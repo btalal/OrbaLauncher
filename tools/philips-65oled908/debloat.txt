@@ -1,7 +1,7 @@
 # Philips 65OLED908/12 (65" 4K OLED+ with Ambilight, Bowers & Wilkins sound), France
 # Google TV 14 (API 34), firmware UKN2.241117.001 build 3000518, security patch 2026-01-05, board PH1M_WW_9972
 # ro.product.model=Philips Google TV TA2  ro.product.device=PH1M_WW_9972  SoC MediaTek MT9972 (ro.hardware mt5896)
-# 273 packages installed. On Wi-Fi. Home: Orba (https://github.com/btalal/orba) through its accessibility
+# 273 packages installed. On Wi-Fi. Home: Orba (https://github.com/btalal/OrbaLauncher) through its accessibility
 # service; the stock launcher (launcherx) is NOT disabled.
 #
 # Apply:   tools\disable.ps1 -TvHost <tv ip> tools\philips-65oled908\debloat.txt
