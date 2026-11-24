@@ -6,6 +6,17 @@ your tiles and settings are kept.
 
 ## [Unreleased]
 
+## [3.12] - 2026-11-24
+### Added
+- **5 languages**: Spanish, Italian and Arabic join English and French. Every text now lives in `res/values*/strings.xml`;
+  Arabic uses a mirrored, right-to-left layout (the Orba logo keeps its own direction).
+- **Language** in Orba settings: automatic (the TV's language, default) or a fixed one; applied at once, screensaver included.
+### Changed
+- Menus widen when a label needs it, so long Spanish and Italian labels are not cut.
+### Fixed
+- In a long menu, options no longer scroll over the window title; the list fades out where it continues.
+- The first selected tile zooms from its centre (it used to grow sideways), and the glow is never cut at the screen edges.
+
 ## [3.11.1] - 2026-11-23
 ### Changed
 - The **screensaver** follows the chosen theme: deep black with a soft amber glow in OLED (no waves), unchanged in Orba and Glossy.

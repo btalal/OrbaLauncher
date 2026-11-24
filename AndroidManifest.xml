@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fr.maison.accueil"
-    android:versionCode="24"
-    android:versionName="3.11.1">
+    android:versionCode="25"
+    android:versionName="3.12">
 
     <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
 
@@ -42,6 +42,7 @@
 
     <application
         android:label="Orba"
+        android:supportsRtl="true"
         android:icon="@drawable/icone"
         android:banner="@drawable/banniere"
         android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen">
@@ -54,7 +55,7 @@
             android:excludeFromRecents="true"
             android:clearTaskOnLaunch="true"
             android:screenOrientation="landscape"
-            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode|locale">
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

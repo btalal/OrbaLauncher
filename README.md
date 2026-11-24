@@ -26,7 +26,17 @@ Orba replaces the busy Google TV and Android TV home screen with a calm, readabl
   <img src="docs/demo.gif" alt="Demo: browsing Orba and opening the Sources button" width="800">
 </p>
 
-## New in version 3.10
+## New in version 3.12
+
+- **5 languages**: Spanish, Italian and Arabic join English and French. Orba follows the TV's language, or the one you
+  pick in Orba settings → *Language*. Arabic is fully mirrored, right to left.
+
+<p align="center">
+  <img src="docs/capture-langues.png" alt="Orba settings: choosing the language" width="440">
+  <img src="docs/capture-arabe.png" alt="Orba in Arabic, mirrored right to left" width="440">
+</p>
+
+## Version 3.10
 
 - **Uninstall…** in the tile menu (long-press OK) for the apps you installed. Android asks for confirmation first;
   system apps don't show the option.
@@ -111,8 +121,8 @@ remote's physical **Input** key), and the list of the TV's inputs opens (HDMI wi
 - **Arrange freely**: long-press OK on a tile → *Move*, *App info…*, *Hide from home* or *Hidden apps…*. The **+** tile brings a hidden app back.
 - **Opens first**: when the TV turns on and when you press **Home**, Orba appears.
   **Long-press** Home to reach the original Google TV / Android TV home.
-- **Bilingual**: English and French (follows the TV's language automatically).
-- **Ultra-light & private**: about 315 KB, no `INTERNET` permission, no ads, no tracking.
+- **5 languages**: English, French, Spanish, Italian and Arabic (right-to-left). Follows the TV's language, or pick one in Orba settings → *Language* (3.12).
+- **Ultra-light & private**: under 1 MB, no `INTERNET` permission, no ads, no tracking.
 
 ## Install Orba on an Android TV / Google TV
 

@@ -3,4 +3,72 @@
     <string name="service_nom">Home Key → Orba</string>
     <string name="service_resume">Makes Orba the home screen. Hold Home to open the original TV home.</string>
     <string name="service_description">Makes Orba the TV\'s home screen. Short press on Home: Orba. Long press on Home: original Google TV / Android TV home. When the stock home screen appears on its own (at boot or after closing an app), Orba replaces it. This service only sees the Home key and the active package name; it never reads screen content and records nothing.</string>
+
+    <!-- Langue réellement affichée (une langue non traduite retombe sur l'anglais) -->
+    <string name="code_langue" translatable="false">en</string>
+    <!-- « Libellé : valeur » et format de la date -->
+    <string name="paire">%1$s: %2$s</string>
+    <string name="format_date">EEEE d MMMM</string>
+
+    <string name="vos_applications">Your apps</string>
+    <string name="aide_deplacement">"Arrows: move   ·   OK or Back: done"</string>
+    <string name="parametres">Settings</string>
+    <string name="sources">Inputs</string>
+    <string name="sources_description">TV inputs (HDMI, antenna…)</string>
+
+    <string name="deplacer">Move</string>
+    <string name="favori_ajouter">Add to favourites</string>
+    <string name="favori_retirer">Remove from favourites</string>
+    <string name="infos_appli">App info…</string>
+    <string name="desinstaller">Uninstall…</string>
+    <string name="masquer">Hide from home</string>
+    <string name="applis_masquees">Hidden apps…</string>
+    <string name="reglages_orba_menu">Orba settings…</string>
+    <string name="reafficher">Unhide an app</string>
+
+    <string name="reglages_orba">Orba settings</string>
+    <string name="theme">Theme</string>
+    <string name="theme_orba">Orba (plain)</string>
+    <string name="theme_glossy">Glossy (OrbaTV glass and glow)</string>
+    <string name="theme_oled">OLED (deep black, amber)</string>
+    <string name="langue">Language</string>
+    <string name="langue_auto">Automatic</string>
+    <string name="tuiles_par_ligne">Tiles per row</string>
+    <string name="fond">Background</string>
+    <string name="fond_anime">Animated waves</string>
+    <string name="fond_fixe">Still waves</string>
+    <string name="fond_noir">Pure black (OLED)</string>
+    <string name="halo">Glow</string>
+    <string name="halo_appli">app colour</string>
+    <string name="halo_orba">Orba cyan</string>
+    <string name="veille">Screensaver</string>
+    <string name="veille_non">off</string>
+    <plurals name="veille_apres">
+        <item quantity="one">after %1$d min</item>
+        <item quantity="other">after %1$d min</item>
+    </plurals>
+    <string name="veille_voir">Preview screensaver</string>
+    <string name="au_demarrage">On start-up</string>
+    <string name="au_demarrage_titre">When the TV starts</string>
+    <string name="demarrage_aucune">None (Orba only)</string>
+    <string name="demarrage_orba">Orba only</string>
+    <string name="parametres_tele">TV settings</string>
+
+    <string name="msg_favori_retire">%1$s removed from favourites</string>
+    <string name="msg_favoris_max">%1$d favourites at most: remove one first</string>
+    <string name="msg_masquee">%1$s is hidden (use the “+” tile to restore it)</string>
+    <string name="msg_aucune_masquee">No hidden apps</string>
+    <string name="msg_aucune_source">No input available on this TV</string>
+    <string name="msg_source_impossible">Unable to open this input</string>
+    <string name="msg_parametres_impossible">Unable to open settings</string>
+    <string name="msg_ouvrir_impossible">Unable to open %1$s</string>
+
+    <string name="reseau_description">Wi-Fi settings</string>
+    <string name="reseau_ethernet">Network: Ethernet cable</string>
+    <string name="reseau_hors_ligne">Offline</string>
+    <string name="reseau_wifi">Wi-Fi: signal %1$s</string>
+    <string name="signal_0">very weak</string>
+    <string name="signal_1">weak</string>
+    <string name="signal_2">medium</string>
+    <string name="signal_3">strong</string>
 </resources>

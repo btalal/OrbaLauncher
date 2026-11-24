@@ -71,12 +71,13 @@ public class MainActivity extends Activity {
             "com.disney.disneyplus", "com.canal.android.canal", "com.apple.atve.androidtv.appletv"
     };
 
-    /** Vrai si la télé est en français ; sinon les textes s'affichent en anglais. */
-    private static boolean estFr() {
-        return "fr".equalsIgnoreCase(Locale.getDefault().getLanguage());
-    }
-    private static String tr(String fr, String en) {
-        return estFr() ? fr : en;
+    @Override protected void attachBaseContext(Context base) { super.attachBaseContext(Langue.appliquer(base)); }
+
+    private boolean rtl;   // arabe : interface de droite à gauche
+
+    /** « Libellé : valeur » dans la ponctuation de la langue. */
+    private String paire(int libelle, String valeur) {
+        return getString(R.string.paire, getString(libelle), Langue.nom(this, valeur));
     }
 
     // Réglages Orba (modifiables sur la télé : appui long sur la roue dentée)
@@ -192,6 +193,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle state) {
         super.onCreate(state);
         prefs = getSharedPreferences("accueil", MODE_PRIVATE);
+        rtl = Langue.rtl(this);
         Views.theme = Math.max(0, Math.min(2, prefs.getInt("theme", Views.GLOSSY)));   // Réglages Orba > Thème
         interFin = police("inter-300.ttf");          // heure et date : Inter (choisie au début du projet)
         if (Views.oled()) {                          // thème OLED : Inter partout, comme OrbaTV
@@ -213,12 +215,13 @@ public class MainActivity extends Activity {
 
         plus = new App();
         plus.pkg = PLUS;
-        plus.label = tr("Réafficher une appli", "Unhide an app");
+        plus.label = getString(R.string.reafficher);
         plus.fond = TUILE;
         plus.halo = CYAN;
 
         FrameLayout root = new FrameLayout(this);
         root.setBackgroundColor(Views.fond());
+        root.setLayoutDirection(Langue.sens(this));   // arabe : droite à gauche (marges toujours en début/fin, jamais gauche/droite)
 
         ondes = new OndesView(this);
         ondes.setMode(Views.oled() ? 2 : fondMode);   // thème OLED : fond noir profond, sans vagues
@@ -233,17 +236,21 @@ public class MainActivity extends Activity {
         header = new LinearLayout(this);
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
-        header.setPadding(dp(7), 0, 0, 0);   // logo décalé d'environ 1 cm vers la droite (bord coupé par la télé)
+        header.setPaddingRelative(dp(7), 0, 0, 0);   // logo décalé d'environ 1 cm vers la droite (bord coupé par la télé)
         header.setClipChildren(false);       // halo des boutons jamais rogné
         header.setClipToPadding(false);
         column.setClipChildren(false);
+        column.setClipToPadding(false);
 
         // Logo Orba : anneau vectoriel (d'après orba_symbole.svg) + ORBA en Montserrat ExtraBold
         // (dessin vectoriel natif d'Android : res/drawable/logo_anneau.xml, rendu net à la taille exacte)
         android.widget.ImageView anneau = new android.widget.ImageView(this);
         anneau.setImageResource(getResources().getIdentifier("logo_anneau", "drawable", getPackageName()));
         anneau.setContentDescription("Orba");
-        header.addView(anneau, new LinearLayout.LayoutParams(dp(40), dp(40)));   // même taille que OrbaFlux et OrbaTV
+        LinearLayout marque = new LinearLayout(this);   // anneau puis « Orba », dans cet ordre même en arabe
+        marque.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        marque.setGravity(Gravity.CENTER_VERTICAL);
+        marque.addView(anneau, new LinearLayout.LayoutParams(dp(40), dp(40)));   // même taille que OrbaFlux et OrbaTV
         TextView nom = new TextView(this);
         nom.setText("Orba");
         nom.setTypeface(police("montserrat-500.ttf"));     // même écriture fine que OrbaTV : Montserrat Medium, « Orba » (plus de majuscules grasses)
@@ -253,8 +260,10 @@ public class MainActivity extends Activity {
         nom.setIncludeFontPadding(false);
         LinearLayout.LayoutParams np = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        np.leftMargin = dp(6);
-        header.addView(nom, np);
+        np.setMarginStart(dp(6));
+        marque.addView(nom, np);
+        header.addView(marque, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         header.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1f));
 
@@ -265,7 +274,7 @@ public class MainActivity extends Activity {
             @Override public void onClick(View v) { ouvrirSources(); }
         });
         LinearLayout.LayoutParams sp0 = new LinearLayout.LayoutParams(dp(52), dp(52));
-        sp0.rightMargin = dp(10);
+        sp0.setMarginEnd(dp(10));
         ligne.addView(sources, sp0);
         reseau = new ReseauView(this);
         reseau.setOnClickListener(new View.OnClickListener() {
@@ -283,8 +292,8 @@ public class MainActivity extends Activity {
             @Override public boolean onLongClick(View v) { montrerReglages(); return true; }   // réglages Orba
         });
         LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(dp(52), dp(52));
-        rp.leftMargin = dp(10);
-        rp.rightMargin = dp(18);
+        rp.setMarginStart(dp(10));
+        rp.setMarginEnd(dp(18));
         ligne.addView(reglages, rp);
         TextClock time = new TextClock(this);
         time.setFormat24Hour("HH:mm");
@@ -294,7 +303,7 @@ public class MainActivity extends Activity {
         time.setTextColor(TEXTE);
         time.setIncludeFontPadding(false);
         time.setSingleLine(true);
-        time.setGravity(Gravity.END);
+        time.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
         time.setMinWidth(Math.round(time.getPaint().measureText("00:00")) + dp(4));   // place réservée : jamais coupée
         LinearLayout droite = new LinearLayout(this);
         droite.setOrientation(LinearLayout.VERTICAL);
@@ -303,18 +312,18 @@ public class MainActivity extends Activity {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         TextClock date = new TextClock(this);
-        date.setFormat24Hour("EEEE d MMMM");
-        date.setFormat12Hour("EEEE d MMMM");
+        date.setFormat24Hour(getString(R.string.format_date));
+        date.setFormat12Hour(getString(R.string.format_date));
         date.setTypeface(interFin);
-        date.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        date.setTextSize(TypedValue.COMPLEX_UNIT_SP, rtl ? 17 : 15);
         date.setTextColor(Views.doux());
-        date.setGravity(Gravity.END);
+        date.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
         date.setPadding(0, dp(2), 0, 0);
         droite.addView(date, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        hp.rightMargin = dp(8);              // un peu plus loin du bord (bords d'image coupés par la télé)
+        hp.setMarginEnd(dp(8));              // un peu plus loin du bord (bords d'image coupés par la télé)
         header.addView(droite, hp);
 
         LinearLayout.LayoutParams hdr = new LinearLayout.LayoutParams(
@@ -337,6 +346,7 @@ public class MainActivity extends Activity {
         contenu.setOrientation(LinearLayout.VERTICAL);
         contenu.setClipChildren(false);
         contenu.setClipToPadding(false);
+        contenu.setPadding(dp(24), 0, dp(24), 0);   // la zone déborde de 24 dp : halo et zoom jamais rognés sur les bords
         scroll.addView(contenu, new ScrollView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
@@ -344,7 +354,8 @@ public class MainActivity extends Activity {
         nomFavori = new TextView(this);
         nomFavori.setTypeface(interFin);   // Inter fine, comme l'heure : discret
         nomFavori.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-        nomFavori.setLetterSpacing(0.01f);
+        if (!rtl) nomFavori.setLetterSpacing(0.01f);   // l'espacement détacherait les lettres arabes
+        nomFavori.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         nomFavori.setTextColor(TEXTE);
         nomFavori.setSingleLine(true);
         nomFavori.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);   // nom trop long : il défile
@@ -355,7 +366,8 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams nf = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         nf.topMargin = dp(18);
-        nf.leftMargin = dp(14);
+        nf.setMarginStart(dp(14));
+        nf.setMarginEnd(dp(14));
         contenu.addView(nomFavori, nf);
 
         // Dock : jusqu'à 4 favoris en grandes tuiles
@@ -376,18 +388,18 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams stp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         if (Views.theme == Views.ORBA) {     // thème Orba : titre sobre d'origine
-            section.setText(tr("Vos applications", "Your apps"));
-            section.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+            section.setText(R.string.vos_applications);
+            section.setTextSize(TypedValue.COMPLEX_UNIT_SP, rtl ? 19 : 17);
             section.setTextColor(TEXTE_DOUX);
-            section.setLetterSpacing(0.02f);
+            if (!rtl) section.setLetterSpacing(0.02f);
         } else {
             View pastilleSection = new View(this);
             pastilleSection.setBackground(new Views.Pastille());
             titreSection.addView(pastilleSection, new LinearLayout.LayoutParams(dp(5), dp(18)));
-            section.setText(tr("Vos applications", "Your apps").toUpperCase(java.util.Locale.ROOT));
-            section.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            section.setText(getString(R.string.vos_applications).toUpperCase(Locale.getDefault()));
+            section.setTextSize(TypedValue.COMPLEX_UNIT_SP, rtl ? 18 : 14);   // l'arabe n'a pas de capitales
             section.setTextColor(Views.oled() ? Views.AMBRE_CLAIR : 0xFF5AA9FF);   // bleu clair de la charte, ambre clair en OLED
-            section.setLetterSpacing(0.16f);
+            if (!rtl) section.setLetterSpacing(0.16f);
             stp.setMarginStart(dp(10));
         }
         titreSection.addView(section, stp);
@@ -408,6 +420,8 @@ public class MainActivity extends Activity {
 
         LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f);
+        sp.setMarginStart(-dp(24));
+        sp.setMarginEnd(-dp(24));
         column.addView(scroll, sp);
         root.addView(column);
 
@@ -416,7 +430,7 @@ public class MainActivity extends Activity {
         aide.setTypeface(moyen);
         aide.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         aide.setTextColor(TEXTE);
-        aide.setText(tr("Flèches : déplacer   ·   OK ou Retour : valider", "Arrows: move   ·   OK or Back: done"));
+        aide.setText(R.string.aide_deplacement);
         aide.setPadding(dp(22), dp(11), dp(22), dp(11));
         aide.setBackground(Views.verre(this, 22));
         aide.setVisibility(View.GONE);
@@ -473,9 +487,9 @@ public class MainActivity extends Activity {
         final List<App> liste = new ArrayList<>();
         for (App a : toutes) if (!SETTINGS_PKG.equals(a.pkg)) liste.add(a);
         String[] noms = new String[liste.size() + 1];
-        noms[0] = tr("Aucune (Orba seul)", "None (Orba only)");
+        noms[0] = getString(R.string.demarrage_aucune);
         for (int i = 0; i < liste.size(); i++) noms[i + 1] = liste.get(i).label;
-        choisir(tr("Au démarrage de la télé", "When the TV starts"), noms, new Choix() {
+        choisir(getString(R.string.au_demarrage_titre), noms, new Choix() {
             @Override public void choisi(int k) {
                 prefs.edit().putString("appli_demarrage", k == 0 ? "" : liste.get(k - 1).pkg).apply();
                 montrerReglages();
@@ -485,7 +499,7 @@ public class MainActivity extends Activity {
 
     private String nomAppliDemarrage() {
         App a = cache.get(prefs.getString("appli_demarrage", ""));
-        return a == null ? tr("Orba seul", "Orba only") : a.label;
+        return a == null ? getString(R.string.demarrage_orba) : a.label;
     }
 
     @Override protected void onResume() {
@@ -555,7 +569,7 @@ public class MainActivity extends Activity {
         if (!seen.contains(SETTINGS_PKG)) {
             App s = new App();
             s.pkg = SETTINGS_PKG;
-            s.label = tr("Paramètres", "Settings");
+            s.label = getString(R.string.parametres);
             s.intent = new Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try {
                 Drawable d = pm.getApplicationBanner(SETTINGS_PKG);
@@ -651,11 +665,10 @@ public class MainActivity extends Activity {
         List<App> liste = new ArrayList<>(favoris);
         if (liste.contains(a)) {
             liste.remove(a);
-            Toast.makeText(this, a.label + tr(" retiré des favoris", " removed from favourites"), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.msg_favori_retire, Langue.nom(this, a.label)), Toast.LENGTH_SHORT).show();
         } else {
             if (liste.size() >= MAX_FAVORIS) {
-                Toast.makeText(this, tr("4 favoris au maximum : retirez-en un d'abord",
-                        "4 favourites at most: remove one first"), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.msg_favoris_max, MAX_FAVORIS), Toast.LENGTH_LONG).show();
                 return;
             }
             liste.add(a);
@@ -680,15 +693,16 @@ public class MainActivity extends Activity {
         LinearLayout panneau = new LinearLayout(this);
         panneau.setOrientation(LinearLayout.VERTICAL);
         panneau.setPadding(dp(18), dp(24), dp(18), dp(14));
-        panneau.setClipChildren(false);
-        panneau.setClipToPadding(false);
+        // rognage laissé actif : la liste qui défile ne passe jamais sur le titre (le halo tient dans la marge des options)
         panneau.setBackground(Views.verre(this, 24));   // verre translucide d'OrbaTV
+        panneau.setLayoutDirection(Langue.sens(this));
 
         TextView t = new TextView(this);
         t.setText(titre);
         t.setTypeface(gras);
-        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, rtl ? 23 : 21);
         t.setTextColor(Color.WHITE);
+        t.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         t.setSingleLine(true);   // (titre de fenêtre)
         t.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);   // titre trop long (nom d'appli) : il défile
         t.setMarqueeRepeatLimit(-1);
@@ -713,20 +727,24 @@ public class MainActivity extends Activity {
         liste.setClipChildren(false);
         liste.setClipToPadding(false);
         TextView premier = null;
+        float large = t.getPaint().measureText(titre) + dp(52);   // largeur utile : aucun libellé coupé, quelle que soit la langue
         for (int i = 0; i < options.length; i++) {
             final int idx = i;
-            Views.Option o = new Views.Option(this, options[i], moyen, 17, TEXTE);
+            Views.Option o = new Views.Option(this, options[i], moyen, rtl ? 19 : 17, TEXTE);   // l'arabe paraît plus petit à taille égale
             o.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) { d.dismiss(); action.choisi(idx); }
             });
             liste.addView(o, new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            large = Math.max(large, o.getPaint().measureText(options[i]) + o.getPaddingLeft() + o.getPaddingRight() + dp(40));
             if (premier == null || i == depart) premier = o;
         }
 
         // Seule la liste défile : le titre reste visible, et la fenêtre ne dépasse jamais ~86 % de l'écran
         ScrollView sv = new ScrollView(this);
         sv.setVerticalScrollBarEnabled(false);
+        sv.setVerticalFadingEdgeEnabled(true);   // la liste s'estompe là où elle continue
+        sv.setFadingEdgeLength(dp(30));
         sv.setClipChildren(false);
         sv.setClipToPadding(false);
         sv.addView(liste);
@@ -743,78 +761,96 @@ public class MainActivity extends Activity {
         Window w = d.getWindow();
         if (w != null) {
             w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            w.setLayout(dp(460), ViewGroup.LayoutParams.WRAP_CONTENT);
+            w.setLayout(Math.round(Math.max(dp(460), Math.min(dp(640), large))), ViewGroup.LayoutParams.WRAP_CONTENT);
             w.setDimAmount(0.65f);
         }
         d.show();
         if (premier != null) premier.requestFocus();
     }
 
+    private String texteVeille(int minutes) {
+        return minutes == 0 ? getString(R.string.veille_non) : getResources().getQuantityString(R.plurals.veille_apres, minutes, minutes);
+    }
+
     /** Réglages Orba (appui long sur la roue dentée). Chaque choix est appliqué tout de suite. */
     private void montrerReglages() {
-        final String[] fonds = estFr()
-                ? new String[]{"Vagues animées", "Vagues fixes", "Noir pur (OLED)"}
-                : new String[]{"Animated waves", "Still waves", "Pure black (OLED)"};
+        final String[] fonds = {getString(R.string.fond_anime), getString(R.string.fond_fixe), getString(R.string.fond_noir)};
         final String[] themes = {"Orba", "Glossy", "OLED"};
+        final String langue = Langue.choisie(this);
+        final String[] langues = Langue.NOMS.clone();
+        langues[0] = getString(R.string.langue_auto);
+        int l = 0;
+        for (int i = 0; i < langues.length; i++) if (Langue.CODES[i].equals(langue)) l = i;
+        final int langueActuelle = l;
         final String[] options = {
-                tr("Thème : ", "Theme: ") + themes[Views.theme],
-                tr("Tuiles par ligne : ", "Tiles per row: ") + colonnes,
-                tr("Fond : ", "Background: ") + fonds[fondMode],
-                tr("Halo : ", "Glow: ") + (haloCyan ? tr("cyan Orba", "Orba cyan") : tr("couleur de l'appli", "app colour")),
-                tr("Écran de veille : ", "Screensaver: ") + (veilleMinutes == 0 ? tr("désactivé", "off") : tr("après ", "after ") + veilleMinutes + " min"),
-                tr("Voir l'écran de veille", "Preview screensaver"),
-                tr("Au démarrage : ", "On start-up: ") + nomAppliDemarrage(),
-                tr("Applis masquées…", "Hidden apps…"),
-                tr("Paramètres de la télé", "TV settings")
+                paire(R.string.theme, themes[Views.theme]),
+                paire(R.string.langue, langues[langueActuelle]),
+                paire(R.string.tuiles_par_ligne, String.format(Locale.getDefault(), "%d", colonnes)),
+                paire(R.string.fond, fonds[fondMode]),
+                paire(R.string.halo, getString(haloCyan ? R.string.halo_orba : R.string.halo_appli)),
+                paire(R.string.veille, texteVeille(veilleMinutes)),
+                getString(R.string.veille_voir),
+                paire(R.string.au_demarrage, nomAppliDemarrage()),
+                getString(R.string.applis_masquees),
+                getString(R.string.parametres_tele)
         };
-        choisir(tr("Réglages Orba", "Orba settings"), options, new Choix() {
+        choisir(getString(R.string.reglages_orba), options, new Choix() {
             @Override public void choisi(int i) {
                 switch (i) {
-                    case 0: choisirValeur(tr("Thème", "Theme"),
-                            estFr() ? new String[]{"Orba (sobre)", "Glossy (verre et halo OrbaTV)", "OLED (noir profond, ambre)"}
-                                    : new String[]{"Orba (plain)", "Glossy (OrbaTV glass and glow)", "OLED (deep black, amber)"},
-                            new Choix() {
+                    case 0: choisirValeur(getString(R.string.theme), new String[]{getString(R.string.theme_orba),
+                            getString(R.string.theme_glossy), getString(R.string.theme_oled)}, new Choix() {
                         @Override public void choisi(int k) {
                             if (k == Views.theme) { montrerReglages(); return; }
                             prefs.edit().putInt("theme", k).apply();
                             rouvrirReglages = true;   // l'écran est reconstruit avec le nouveau thème, puis les réglages se rouvrent
                             recreate();
                         } }, Views.theme); break;
-                    case 1: choisirValeur(tr("Tuiles par ligne", "Tiles per row"), new String[]{"4", "5", "6", "7"}, new Choix() {
+                    case 1: choisirValeur(getString(R.string.langue), langues, new Choix() {
+                        @Override public void choisi(int k) {
+                            if (k == langueActuelle) { montrerReglages(); return; }
+                            prefs.edit().putString(Langue.PREF, Langue.CODES[k]).apply();
+                            rouvrirReglages = true;   // l'écran est reconstruit dans la langue choisie
+                            recreate();
+                        } }, langueActuelle); break;
+                    case 2: choisirValeur(getString(R.string.tuiles_par_ligne), nombres(4, 7), new Choix() {
                         @Override public void choisi(int k) {
                             colonnes = 4 + k; prefs.edit().putInt("colonnes", colonnes).apply();
                             signature = ""; appliquerOrdre(); montrerReglages();
                         } }); break;
-                    case 2: choisirValeur(tr("Fond", "Background"), fonds, new Choix() {
+                    case 3: choisirValeur(getString(R.string.fond), fonds, new Choix() {
                         @Override public void choisi(int k) {
                             fondMode = k; prefs.edit().putInt("fond", k).apply();
                             ondes.setMode(Views.oled() ? 2 : k); montrerReglages();
                         } }); break;
-                    case 3: choisirValeur(tr("Halo", "Glow"),
-                            estFr() ? new String[]{"Couleur de l'appli", "Cyan Orba"} : new String[]{"App colour", "Orba cyan"},
-                            new Choix() {
+                    case 4: choisirValeur(getString(R.string.halo), new String[]{Langue.cap(getString(R.string.halo_appli)),
+                            Langue.cap(getString(R.string.halo_orba))}, new Choix() {
                         @Override public void choisi(int k) {
                             haloCyan = k == 1; prefs.edit().putBoolean("halo_cyan", haloCyan).apply();
                             signature = ""; appliquerOrdre(); montrerReglages();
                         } }); break;
-                    case 4: final int[] minutes = {0, 5, 10, 20, 30};
-                        choisirValeur(tr("Écran de veille", "Screensaver"),
-                                estFr() ? new String[]{"Désactivé", "Après 5 min", "Après 10 min", "Après 20 min", "Après 30 min"}
-                                        : new String[]{"Off", "After 5 min", "After 10 min", "After 20 min", "After 30 min"},
-                                new Choix() {
+                    case 5: final int[] minutes = {0, 5, 10, 20, 30};
+                        String[] durees = new String[minutes.length];
+                        for (int k = 0; k < durees.length; k++) durees[k] = Langue.cap(texteVeille(minutes[k]));
+                        choisirValeur(getString(R.string.veille), durees, new Choix() {
                         @Override public void choisi(int k) {
                             veilleMinutes = minutes[k]; prefs.edit().putInt("veille_minutes", veilleMinutes).apply();
                             relancerVeille(); montrerReglages();
                         } }); break;
-                    case 5: startActivity(new Intent(MainActivity.this, VeilleActivity.class)); break;
-                    case 6: choisirAppliDemarrage(); break;
-                    case 7: montrerMasquees(); break;
+                    case 6: startActivity(new Intent(MainActivity.this, VeilleActivity.class)); break;
+                    case 7: choisirAppliDemarrage(); break;
+                    case 8: montrerMasquees(); break;
                     default: ouvrir(Settings.ACTION_SETTINGS);
                 }
             }
         });
     }
 
+    /** Les nombres de a à b, écrits dans les chiffres de la langue. */
+    private static String[] nombres(int a, int b) {
+        String[] r = new String[b - a + 1];
+        for (int i = 0; i < r.length; i++) r[i] = String.format(Locale.getDefault(), "%d", a + i);
+        return r;
+    }
     private void choisirValeur(String titre, String[] valeurs, Choix action) { choisir(titre, valeurs, action); }
     private void choisirValeur(String titre, String[] valeurs, Choix action, int depart) { choisir(titre, valeurs, action, depart); }
 
@@ -857,16 +893,16 @@ public class MainActivity extends Activity {
         final boolean protege = SETTINGS_PKG.equals(a.pkg);
         final List<String> choix = new ArrayList<>();
         final List<Integer> codes = new ArrayList<>();
-        choix.add(tr("Déplacer", "Move")); codes.add(0);
+        choix.add(getString(R.string.deplacer)); codes.add(0);
         if (!protege) {
-            if (favoris.contains(a)) { choix.add(tr("Retirer des favoris", "Remove from favourites")); codes.add(5); }
-            else { choix.add(tr("Ajouter aux favoris", "Add to favourites")); codes.add(5); }
+            if (favoris.contains(a)) { choix.add(getString(R.string.favori_retirer)); codes.add(5); }
+            else { choix.add(getString(R.string.favori_ajouter)); codes.add(5); }
         }
-        if (!protege) { choix.add(tr("Infos sur l'appli…", "App info…")); codes.add(1); }
-        if (!protege && desinstallable(a)) { choix.add(tr("Désinstaller…", "Uninstall…")); codes.add(6); }
-        if (!protege) { choix.add(tr("Masquer de l'accueil", "Hide from home")); codes.add(2); }
-        choix.add(tr("Applis masquées…", "Hidden apps…")); codes.add(3);
-        choix.add(tr("Réglages Orba…", "Orba settings…")); codes.add(4);
+        if (!protege) { choix.add(getString(R.string.infos_appli)); codes.add(1); }
+        if (!protege && desinstallable(a)) { choix.add(getString(R.string.desinstaller)); codes.add(6); }
+        if (!protege) { choix.add(getString(R.string.masquer)); codes.add(2); }
+        choix.add(getString(R.string.applis_masquees)); codes.add(3);
+        choix.add(getString(R.string.reglages_orba_menu)); codes.add(4);
         choisir(a.label, choix.toArray(new String[0]), new Choix() {
             @Override public void choisi(int which) {
                 switch (codes.get(which)) {
@@ -893,7 +929,7 @@ public class MainActivity extends Activity {
         if (idx >= 0 && idx + 1 < liste.size()) focusPkg = liste.get(idx + 1).pkg;
         else if (idx > 0) focusPkg = liste.get(idx - 1).pkg;
         appliquerOrdre();
-        Toast.makeText(this, a.label + tr(" est masqué (tuile « + » pour le réafficher)", " hidden (use '+' tile to restore)"), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.msg_masquee, Langue.nom(this, a.label)), Toast.LENGTH_LONG).show();
     }
 
     private void montrerMasquees() {
@@ -901,12 +937,12 @@ public class MainActivity extends Activity {
         final List<App> liste = new ArrayList<>();
         for (App a : toutes) if (m.contains(a.pkg) && !SETTINGS_PKG.equals(a.pkg)) liste.add(a);
         if (liste.isEmpty()) {
-            Toast.makeText(this, tr("Aucune appli masquée", "No hidden apps"), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.msg_aucune_masquee, Toast.LENGTH_SHORT).show();
             return;
         }
         String[] noms = new String[liste.size()];
         for (int i = 0; i < noms.length; i++) noms[i] = liste.get(i).label;
-        choisir(tr("Réafficher une appli", "Unhide an app"), noms, new Choix() {
+        choisir(getString(R.string.reafficher), noms, new Choix() {
             @Override public void choisi(int which) {
                 App a = liste.get(which);
                 Set<String> mm = new HashSet<>(prefs.getStringSet("masquees", new HashSet<String>()));
@@ -981,8 +1017,8 @@ public class MainActivity extends Activity {
         int i = liste.indexOf(enDeplacement);
         int j = i;
         switch (code) {
-            case KeyEvent.KEYCODE_DPAD_LEFT:  j = i - 1; break;
-            case KeyEvent.KEYCODE_DPAD_RIGHT: j = i + 1; break;
+            case KeyEvent.KEYCODE_DPAD_LEFT:  j = rtl ? i + 1 : i - 1; break;   // arabe : la grille est inversée
+            case KeyEvent.KEYCODE_DPAD_RIGHT: j = rtl ? i - 1 : i + 1; break;
             case KeyEvent.KEYCODE_DPAD_UP:    j = dansDock ? i : i - colonnes; break;
             case KeyEvent.KEYCODE_DPAD_DOWN:  j = dansDock ? i : Math.min(i + colonnes, apps.size() - 1); break;
             case KeyEvent.KEYCODE_DPAD_CENTER:
@@ -1106,7 +1142,7 @@ public class MainActivity extends Activity {
             }
         } catch (Exception ignored) { }
         if (entrees.isEmpty()) {
-            Toast.makeText(this, tr("Aucune source disponible sur cette télé", "No input source available on this TV"), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.msg_aucune_source, Toast.LENGTH_SHORT).show();
             return;
         }
         String[] noms = new String[entrees.size()];
@@ -1120,14 +1156,14 @@ public class MainActivity extends Activity {
             } catch (Exception ignored) { }
             noms[i] = (actif ? "●  " : "") + String.valueOf(nom);
         }
-        choisir(tr("Sources", "Inputs"), noms, new Choix() {
+        choisir(getString(R.string.sources), noms, new Choix() {
             @Override public void choisi(int which) {
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW,
                             android.media.tv.TvContract.buildChannelUriForPassthroughInput(entrees.get(which).getId()))
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 } catch (Exception e) {
-                    Toast.makeText(MainActivity.this, tr("Impossible d'ouvrir cette source", "Unable to open this input"), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.msg_source_impossible, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -1140,14 +1176,14 @@ public class MainActivity extends Activity {
                 return;
             } catch (Exception ignored) { }
         }
-        Toast.makeText(this, tr("Impossible d'ouvrir les paramètres", "Unable to open settings"), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.msg_parametres_impossible, Toast.LENGTH_SHORT).show();
     }
 
     private void launch(App a) {
         try {
             startActivity(a.intent);
         } catch (Exception e) {
-            Toast.makeText(this, tr("Impossible d'ouvrir ", "Unable to open ") + a.label, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.msg_ouvrir_impossible, Langue.nom(this, a.label)), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1247,6 +1283,8 @@ public class MainActivity extends Activity {
             carte.set(marge, marge, w - marge, h - marge - hautNom);
             clip.reset();
             clip.addRoundRect(carte, rayon, rayon, Path.Direction.CW);
+            setPivotX(w / 2f);               // zoom centré, aussi pour la tuile choisie avant sa mise en place
+            setPivotY(carte.centerY());
             // Halo « cyan Orba » : dégradé signature cyan → bleu → violet, comme OrbaTV
             if (haloCyan && Views.glossy()) lueur.setShader(Views.degrade(carte.left, carte.right));
         }
@@ -1267,8 +1305,6 @@ public class MainActivity extends Activity {
             });
             anim.start();
             debutDefil = android.os.SystemClock.uptimeMillis();   // le nom trop long repart du début
-            setPivotX(getWidth() / 2f);
-            setPivotY(carte.centerY());
             // Passer devant les voisines (et la ligne devant les autres lignes).
             setTranslationZ(gain ? 2f : 0f);
             View row = (View) getParent();
@@ -1358,8 +1394,13 @@ public class MainActivity extends Activity {
                     c.save();
                     c.clipRect(x0, y - nom.getTextSize() * 1.3f, x0 + max, y + nom.getTextSize() * 0.5f);
                     nom.setTextAlign(Paint.Align.LEFT);
-                    c.drawText(txt, x0 - dx, y, nom);
-                    c.drawText(txt, x0 - dx + cycle, y, nom);
+                    if (android.text.TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(txt, 0, txt.length())) {
+                        c.drawText(txt, x0 + max - lw + dx, y, nom);   // nom écrit en arabe : il défile dans l'autre sens
+                        c.drawText(txt, x0 + max - lw + dx - cycle, y, nom);
+                    } else {
+                        c.drawText(txt, x0 - dx, y, nom);
+                        c.drawText(txt, x0 - dx + cycle, y, nom);
+                    }
                     nom.setTextAlign(Paint.Align.CENTER);
                     c.restore();
                 }
@@ -1458,7 +1499,7 @@ public class MainActivity extends Activity {
         private final Drawable icone;
 
         ReglagesView(Context c) {
-            super(c, "Paramètres");
+            super(c, c.getString(R.string.parametres));
             icone = c.getDrawable(c.getResources().getIdentifier("ic_reglages", "drawable", c.getPackageName())).mutate();
         }
 
@@ -1479,7 +1520,7 @@ public class MainActivity extends Activity {
         private final Paint trait = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         SourcesView(Context c) {
-            super(c, "Sources de la télé (HDMI, antenne…)");
+            super(c, c.getString(R.string.sources_description));
             trait.setStyle(Paint.Style.STROKE);
             trait.setStrokeCap(Paint.Cap.ROUND);
             trait.setStrokeJoin(Paint.Join.ROUND);
@@ -1508,7 +1549,7 @@ public class MainActivity extends Activity {
         private int niveau = 3;    // 0..3
 
         ReseauView(Context c) {
-            super(c, "Réglages Wi-Fi");
+            super(c, c.getString(R.string.reseau_description));
             trait.setStyle(Paint.Style.STROKE);
             trait.setStrokeCap(Paint.Cap.ROUND);
             trait.setStrokeJoin(Paint.Join.ROUND);
@@ -1529,10 +1570,9 @@ public class MainActivity extends Activity {
                 }
             } catch (Exception ignored) { }
             if (t != type || n != niveau) { type = t; niveau = n; invalidate(); }
-            String[] force = estFr() ? new String[]{"très faible", "faible", "moyen", "fort"}
-                                     : new String[]{"very weak", "weak", "medium", "strong"};
-            setContentDescription(type == 2 ? tr("Réseau : câble Ethernet", "Network: Ethernet cable")
-                    : type == 1 ? tr("Wi-Fi : signal ", "Wi-Fi: signal ") + force[niveau] : tr("Hors ligne", "Offline"));
+            int[] force = {R.string.signal_0, R.string.signal_1, R.string.signal_2, R.string.signal_3};
+            setContentDescription(type == 2 ? getString(R.string.reseau_ethernet)
+                    : type == 1 ? getString(R.string.reseau_wifi, getString(force[niveau])) : getString(R.string.reseau_hors_ligne));
         }
 
         /** Couleur du Wi-Fi selon la force du signal : vert fort, jaune moyen, rouge faible ou hors ligne. */

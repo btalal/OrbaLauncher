@@ -11,6 +11,8 @@ import android.view.WindowManager;
 public class VeilleActivity extends Activity {
     private View racine;
 
+    @Override protected void attachBaseContext(android.content.Context base) { super.attachBaseContext(Langue.appliquer(base)); }
+
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
         racine = Veille.creer(this);

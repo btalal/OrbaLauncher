@@ -34,6 +34,7 @@ final class Veille {
         Views.theme = Math.max(0, Math.min(2, c.getSharedPreferences("accueil", Context.MODE_PRIVATE).getInt("theme", Views.GLOSSY)));
         FrameLayout racine = new FrameLayout(c);
         racine.setBackgroundColor(Views.fond());
+        racine.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);   // positions calculées depuis la gauche, aussi en arabe
         MainActivity.OndesView ondes = new MainActivity.OndesView(c);
         ondes.setAttenuation(0.45f);                  // vagues plus discrètes la nuit
         if (Views.oled()) ondes.setMode(2);           // thème OLED : noir profond, sans vagues
@@ -197,10 +198,11 @@ final class Veille {
             private final Paint pDate = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
             private final Paint pMarque = new Paint(Paint.ANTI_ALIAS_FLAG);
             private final SimpleDateFormat fHeure = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            private final SimpleDateFormat fDate = new SimpleDateFormat("EEEE d MMMM", Locale.getDefault());
+            private final SimpleDateFormat fDate;
 
             Texte(Context c) {
                 super(c);
+                fDate = new SimpleDateFormat(c.getString(R.string.format_date), Locale.getDefault());
                 pHeure.setTypeface(police(c, "inter-200.ttf", Typeface.create("sans-serif-thin", Typeface.NORMAL)));
                 pHeure.setTextSize(sp(c, 72));
                 pHeure.setColor(Views.oled() ? 0xFFDADADF : 0xFFD6DEF2);   // pas de blanc pur : moins d'usure OLED

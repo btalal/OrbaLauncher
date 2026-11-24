@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="service_nom">زر الشاشة الرئيسية ← Orba</string>
+    <string name="service_resume">يجعل Orba الشاشة الرئيسية. اضغط مطولًا على زر الشاشة الرئيسية لفتح الواجهة الأصلية.</string>
+    <string name="service_description">تجعل هذه الخدمة Orba الشاشة الرئيسية للتلفاز. ضغطة قصيرة على زر الشاشة الرئيسية: Orba. ضغطة طويلة: الواجهة الأصلية لـ Google TV أو Android TV. عندما تظهر الواجهة الأصلية من تلقاء نفسها (عند التشغيل أو عند الخروج من تطبيق) يحل Orba محلها. لا ترى الخدمة سوى زر الشاشة الرئيسية واسم التطبيق المعروض، ولا تقرأ محتوى الشاشة ولا تسجل أي شيء.</string>
+
+    <string name="code_langue" translatable="false">ar</string>
+    <string name="paire">%1$s: %2$s</string>
+    <string name="format_date">EEEE d MMMM</string>
+
+    <string name="vos_applications">تطبيقاتك</string>
+    <string name="aide_deplacement">"الأسهم: نقل   ·   ‏OK أو رجوع: تأكيد"</string>
+    <string name="parametres">الإعدادات</string>
+    <string name="sources">المصادر</string>
+    <string name="sources_description">مصادر التلفاز (HDMI، الهوائي…)</string>
+
+    <string name="deplacer">نقل</string>
+    <string name="favori_ajouter">إضافة إلى المفضلة</string>
+    <string name="favori_retirer">إزالة من المفضلة</string>
+    <string name="infos_appli">معلومات التطبيق…</string>
+    <string name="desinstaller">إلغاء التثبيت…</string>
+    <string name="masquer">إخفاء من الشاشة الرئيسية</string>
+    <string name="applis_masquees">التطبيقات المخفية…</string>
+    <string name="reglages_orba_menu">إعدادات Orba…</string>
+    <string name="reafficher">إظهار تطبيق مخفي</string>
+
+    <string name="reglages_orba">إعدادات Orba</string>
+    <string name="theme">المظهر</string>
+    <string name="theme_orba">‏Orba (بسيط)</string>
+    <string name="theme_glossy">‏Glossy (زجاج وهالة OrbaTV)</string>
+    <string name="theme_oled">‏OLED (أسود عميق، كهرماني)</string>
+    <string name="langue">اللغة</string>
+    <string name="langue_auto">تلقائية</string>
+    <string name="tuiles_par_ligne">عدد المربعات في الصف</string>
+    <string name="fond">الخلفية</string>
+    <string name="fond_anime">أمواج متحركة</string>
+    <string name="fond_fixe">أمواج ثابتة</string>
+    <string name="fond_noir">أسود خالص (OLED)</string>
+    <string name="halo">الهالة</string>
+    <string name="halo_appli">لون التطبيق</string>
+    <string name="halo_orba">سماوي Orba</string>
+    <string name="veille">شاشة التوقف</string>
+    <string name="veille_non">معطلة</string>
+    <plurals name="veille_apres">
+        <item quantity="zero">بعد %1$d دقيقة</item>
+        <item quantity="one">بعد %1$d دقيقة</item>
+        <item quantity="two">بعد %1$d دقيقة</item>
+        <item quantity="few">بعد %1$d دقائق</item>
+        <item quantity="many">بعد %1$d دقيقة</item>
+        <item quantity="other">بعد %1$d دقيقة</item>
+    </plurals>
+    <string name="veille_voir">معاينة شاشة التوقف</string>
+    <string name="au_demarrage">عند التشغيل</string>
+    <string name="au_demarrage_titre">عند تشغيل التلفاز</string>
+    <string name="demarrage_aucune">بدون (Orba فقط)</string>
+    <string name="demarrage_orba">‏Orba فقط</string>
+    <string name="parametres_tele">إعدادات التلفاز</string>
+
+    <string name="msg_favori_retire">تمت إزالة %1$s من المفضلة</string>
+    <string name="msg_favoris_max">الحد الأقصى للمفضلة %1$d: أزل تطبيقًا أولًا</string>
+    <string name="msg_masquee">تم إخفاء %1$s (مربع «+» لإظهاره من جديد)</string>
+    <string name="msg_aucune_masquee">لا توجد تطبيقات مخفية</string>
+    <string name="msg_aucune_source">لا توجد مصادر متاحة على هذا التلفاز</string>
+    <string name="msg_source_impossible">تعذر فتح هذا المصدر</string>
+    <string name="msg_parametres_impossible">تعذر فتح الإعدادات</string>
+    <string name="msg_ouvrir_impossible">تعذر فتح %1$s</string>
+
+    <string name="reseau_description">إعدادات Wi-Fi</string>
+    <string name="reseau_ethernet">الشبكة: كابل Ethernet</string>
+    <string name="reseau_hors_ligne">غير متصل</string>
+    <string name="reseau_wifi">‏Wi-Fi: الإشارة %1$s</string>
+    <string name="signal_0">ضعيفة جدًا</string>
+    <string name="signal_1">ضعيفة</string>
+    <string name="signal_2">متوسطة</string>
+    <string name="signal_3">قوية</string>
+</resources>

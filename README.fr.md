@@ -27,7 +27,17 @@ recommandations, pas de bandeaux « À regarder ensuite ».
   <img src="docs/demo.gif" alt="Démonstration : navigation dans Orba et ouverture du bouton Sources" width="800">
 </p>
 
-## Nouveau dans la version 3.10
+## Nouveautés de la version 3.12
+
+- **5 langues** : l'espagnol, l'italien et l'arabe rejoignent le français et l'anglais. Orba suit la langue de la télé, ou
+  celle choisie dans Réglages Orba → *Langue*. L'arabe est entièrement inversé, de droite à gauche.
+
+<p align="center">
+  <img src="docs/capture-langues.png" alt="Réglages Orba : choix de la langue" width="440">
+  <img src="docs/capture-arabe.png" alt="Orba en arabe, de droite à gauche" width="440">
+</p>
+
+## Version 3.10
 
 - **Désinstaller…** dans le menu des tuiles (appui long sur OK), pour les applis que vous avez installées. Android
   demande d'abord confirmation ; l'option n'apparaît pas pour les applis système.
@@ -116,8 +126,8 @@ puis OK (ou touche **Source / Input** de la télécommande), et la liste des ent
 - **Organisation libre** : appui long sur OK sur une tuile → *Déplacer*, *Infos sur l'appli…*, *Masquer de l'accueil* ou *Applis masquées…*. La tuile **+** réaffiche une appli masquée.
 - **Démarre en premier** : à l'allumage de la télé et sur la touche **Accueil**, c'est Orba qui s'affiche.
   **Appui long** sur Accueil : l'accueil Google TV / Android TV d'origine reste accessible.
-- **Bilingue** : français et anglais (suit automatiquement la langue de la télé).
-- **Ultra-léger et respectueux de la vie privée** : environ 315 Ko, aucune permission Internet, aucune pub, aucun pistage.
+- **5 langues** : français, anglais, espagnol, italien et arabe (de droite à gauche). Suit la langue de la télé, ou choix dans Réglages Orba → *Langue* (3.12).
+- **Ultra-léger et respectueux de la vie privée** : moins de 1 Mo, aucune permission Internet, aucune pub, aucun pistage.
 
 ## Installer Orba sur une télé Android / Google TV
 

@@ -3,4 +3,70 @@
     <string name="service_nom">Touche Accueil → Orba</string>
     <string name="service_resume">Orba devient l\'écran d\'accueil. Appui long sur Accueil : accueil Google.</string>
     <string name="service_description">Ce service fait d\'Orba l\'écran d\'accueil de la télé. Touche Accueil, appui court : Orba. Appui long : accueil Google TV. Quand l\'accueil Google s\'affiche tout seul (allumage, sortie d\'une appli), il est remplacé par Orba. Le service voit seulement la touche Accueil et le nom de l\'appli affichée. Il ne lit pas le contenu de l\'écran et n\'enregistre rien.</string>
+
+    <string name="code_langue" translatable="false">fr</string>
+    <string name="paire">%1$s : %2$s</string>
+    <string name="format_date">EEEE d MMMM</string>
+
+    <string name="vos_applications">Vos applications</string>
+    <string name="aide_deplacement">"Flèches : déplacer   ·   OK ou Retour : valider"</string>
+    <string name="parametres">Paramètres</string>
+    <string name="sources">Sources</string>
+    <string name="sources_description">Sources de la télé (HDMI, antenne…)</string>
+
+    <string name="deplacer">Déplacer</string>
+    <string name="favori_ajouter">Ajouter aux favoris</string>
+    <string name="favori_retirer">Retirer des favoris</string>
+    <string name="infos_appli">Infos sur l\'appli…</string>
+    <string name="desinstaller">Désinstaller…</string>
+    <string name="masquer">Masquer de l\'accueil</string>
+    <string name="applis_masquees">Applis masquées…</string>
+    <string name="reglages_orba_menu">Réglages Orba…</string>
+    <string name="reafficher">Réafficher une appli</string>
+
+    <string name="reglages_orba">Réglages Orba</string>
+    <string name="theme">Thème</string>
+    <string name="theme_orba">Orba (sobre)</string>
+    <string name="theme_glossy">Glossy (verre et halo OrbaTV)</string>
+    <string name="theme_oled">OLED (noir profond, ambre)</string>
+    <string name="langue">Langue</string>
+    <string name="langue_auto">Automatique</string>
+    <string name="tuiles_par_ligne">Tuiles par ligne</string>
+    <string name="fond">Fond</string>
+    <string name="fond_anime">Vagues animées</string>
+    <string name="fond_fixe">Vagues fixes</string>
+    <string name="fond_noir">Noir pur (OLED)</string>
+    <string name="halo">Halo</string>
+    <string name="halo_appli">couleur de l\'appli</string>
+    <string name="halo_orba">cyan Orba</string>
+    <string name="veille">Écran de veille</string>
+    <string name="veille_non">désactivé</string>
+    <plurals name="veille_apres">
+        <item quantity="one">après %1$d min</item>
+        <item quantity="other">après %1$d min</item>
+    </plurals>
+    <string name="veille_voir">Voir l\'écran de veille</string>
+    <string name="au_demarrage">Au démarrage</string>
+    <string name="au_demarrage_titre">Au démarrage de la télé</string>
+    <string name="demarrage_aucune">Aucune (Orba seul)</string>
+    <string name="demarrage_orba">Orba seul</string>
+    <string name="parametres_tele">Paramètres de la télé</string>
+
+    <string name="msg_favori_retire">%1$s retiré des favoris</string>
+    <string name="msg_favoris_max">%1$d favoris au maximum : retirez-en un d\'abord</string>
+    <string name="msg_masquee">%1$s est masqué (tuile « + » pour le réafficher)</string>
+    <string name="msg_aucune_masquee">Aucune appli masquée</string>
+    <string name="msg_aucune_source">Aucune source disponible sur cette télé</string>
+    <string name="msg_source_impossible">Impossible d\'ouvrir cette source</string>
+    <string name="msg_parametres_impossible">Impossible d\'ouvrir les paramètres</string>
+    <string name="msg_ouvrir_impossible">Impossible d\'ouvrir %1$s</string>
+
+    <string name="reseau_description">Réglages Wi-Fi</string>
+    <string name="reseau_ethernet">Réseau : câble Ethernet</string>
+    <string name="reseau_hors_ligne">Hors ligne</string>
+    <string name="reseau_wifi">Wi-Fi : signal %1$s</string>
+    <string name="signal_0">très faible</string>
+    <string name="signal_1">faible</string>
+    <string name="signal_2">moyen</string>
+    <string name="signal_3">fort</string>
 </resources>

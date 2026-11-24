@@ -182,6 +182,7 @@ final class Views {
             setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
             setTextColor(couleur);
             setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+            setTextAlignment(TEXT_ALIGNMENT_VIEW_START);   // arabe : aligné à droite, même pour un nom latin
             setSingleLine(true);
             setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);   // texte trop long : il défile au focus
             setMarqueeRepeatLimit(-1);

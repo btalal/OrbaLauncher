@@ -20,7 +20,7 @@ tracking. Ideas and bug reports are as welcome as code.
    direction from every edge, and the Home key.
 4. Keep to the house rules:
    - no new permission, no network access, no background service;
-   - every visible text in English **and** French (`MainActivity.tr(fr, en)` or `res/values*/strings.xml`);
+   - every visible text in the 5 languages, in `res/values*/strings.xml` (English, French, Spanish, Italian, Arabic), never hard-coded; start/end margins only (Arabic is right-to-left);
    - nothing specific to one TV brand in the general code path without a fallback for the others.
 5. Open a pull request: say what changed, the TV you tried it on, and add a screenshot or a short video.
 
@@ -60,8 +60,8 @@ pistage. Les idées et les signalements de bugs comptent autant que le code.
 - **Un bug ou une demande précise :** [ouvrir un ticket](https://github.com/btalal/OrbaLauncher/issues/new/choose) et
   remplir le formulaire, avec le modèle de télé, la version d'Android / Google TV et la version d'Orba.
 - **Du code :** forkez le dépôt, construisez avec `.\build.ps1`, testez sur une vraie télé avec la télécommande,
-  gardez les règles ci-dessus (aucune nouvelle permission, aucun accès réseau, textes en anglais **et** en
-  français), puis ouvrez une pull request avec la télé utilisée et une capture.
+  gardez les règles ci-dessus (aucune nouvelle permission, aucun accès réseau, textes dans les 5 langues, dans
+  `res/values*/strings.xml`), puis ouvrez une pull request avec la télé utilisée et une capture.
 - **Une liste de nettoyage :** dans `tools/<marque>-<modèle>/debloat.txt`, seulement des applis désactivées et
   testées quelques jours, jamais désinstallées. Voir [tools/README.md](tools/README.md).
 

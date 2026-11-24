@@ -10,6 +10,8 @@ import android.view.View;
 public class OrbaDream extends DreamService {
     private View racine;
 
+    @Override protected void attachBaseContext(android.content.Context base) { super.attachBaseContext(Langue.appliquer(base)); }
+
     @Override public void onAttachedToWindow() {
         super.onAttachedToWindow();
         setInteractive(false);

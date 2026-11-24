@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="service_nom">Tecla Inicio → Orba</string>
+    <string name="service_resume">Orba pasa a ser la pantalla de inicio. Mantén pulsado Inicio: inicio original.</string>
+    <string name="service_description">Este servicio convierte Orba en la pantalla de inicio de la tele. Tecla Inicio, pulsación corta: Orba. Pulsación larga: inicio original de Google TV / Android TV. Cuando el inicio original aparece solo (al encender o al salir de una aplicación), Orba lo sustituye. El servicio solo ve la tecla Inicio y el nombre de la aplicación en pantalla. No lee el contenido de la pantalla ni registra nada.</string>
+
+    <string name="code_langue" translatable="false">es</string>
+    <string name="paire">%1$s: %2$s</string>
+    <string name="format_date">EEEE d \'de\' MMMM</string>
+
+    <string name="vos_applications">Tus aplicaciones</string>
+    <string name="aide_deplacement">"Flechas: mover   ·   OK o Atrás: aceptar"</string>
+    <string name="parametres">Ajustes</string>
+    <string name="sources">Entradas</string>
+    <string name="sources_description">Entradas de la tele (HDMI, antena…)</string>
+
+    <string name="deplacer">Mover</string>
+    <string name="favori_ajouter">Añadir a favoritos</string>
+    <string name="favori_retirer">Quitar de favoritos</string>
+    <string name="infos_appli">Información de la aplicación…</string>
+    <string name="desinstaller">Desinstalar…</string>
+    <string name="masquer">Ocultar del inicio</string>
+    <string name="applis_masquees">Aplicaciones ocultas…</string>
+    <string name="reglages_orba_menu">Ajustes de Orba…</string>
+    <string name="reafficher">Volver a mostrar una aplicación</string>
+
+    <string name="reglages_orba">Ajustes de Orba</string>
+    <string name="theme">Tema</string>
+    <string name="theme_orba">Orba (sobrio)</string>
+    <string name="theme_glossy">Glossy (cristal y halo OrbaTV)</string>
+    <string name="theme_oled">OLED (negro profundo, ámbar)</string>
+    <string name="langue">Idioma</string>
+    <string name="langue_auto">Automático</string>
+    <string name="tuiles_par_ligne">Iconos por fila</string>
+    <string name="fond">Fondo</string>
+    <string name="fond_anime">Ondas animadas</string>
+    <string name="fond_fixe">Ondas fijas</string>
+    <string name="fond_noir">Negro puro (OLED)</string>
+    <string name="halo">Halo</string>
+    <string name="halo_appli">color de la aplicación</string>
+    <string name="halo_orba">cian Orba</string>
+    <string name="veille">Salvapantallas</string>
+    <string name="veille_non">desactivado</string>
+    <plurals name="veille_apres">
+        <item quantity="one">tras %1$d min</item>
+        <item quantity="many">tras %1$d min</item>
+        <item quantity="other">tras %1$d min</item>
+    </plurals>
+    <string name="veille_voir">Ver el salvapantallas</string>
+    <string name="au_demarrage">Al encender</string>
+    <string name="au_demarrage_titre">Al encender la tele</string>
+    <string name="demarrage_aucune">Ninguna (solo Orba)</string>
+    <string name="demarrage_orba">solo Orba</string>
+    <string name="parametres_tele">Ajustes de la tele</string>
+
+    <string name="msg_favori_retire">%1$s se ha quitado de favoritos</string>
+    <string name="msg_favoris_max">%1$d favoritos como máximo: quita uno primero</string>
+    <string name="msg_masquee">%1$s está oculta (icono «+» para volver a mostrarla)</string>
+    <string name="msg_aucune_masquee">No hay aplicaciones ocultas</string>
+    <string name="msg_aucune_source">No hay entradas disponibles en esta tele</string>
+    <string name="msg_source_impossible">No se puede abrir esta entrada</string>
+    <string name="msg_parametres_impossible">No se pueden abrir los ajustes</string>
+    <string name="msg_ouvrir_impossible">No se puede abrir %1$s</string>
+
+    <string name="reseau_description">Ajustes de Wi-Fi</string>
+    <string name="reseau_ethernet">Red: cable Ethernet</string>
+    <string name="reseau_hors_ligne">Sin conexión</string>
+    <string name="reseau_wifi">Wi-Fi: señal %1$s</string>
+    <string name="signal_0">muy débil</string>
+    <string name="signal_1">débil</string>
+    <string name="signal_2">media</string>
+    <string name="signal_3">fuerte</string>
+</resources>
