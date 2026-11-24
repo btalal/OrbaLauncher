@@ -24,7 +24,7 @@ l'heure, la date et **vos applications**, rien d'autre. Pas de publicités, pas 
 recommandations, pas de bandeaux « À regarder ensuite ».
 
 <p align="center">
-  <img src="docs/demo.gif" alt="Démonstration : navigation dans Orba et ouverture du bouton Sources" width="800">
+  <img src="docs/demo.gif" alt="Démonstration : changement de thème, navigation dans Orba et menu d'une tuile" width="800">
 </p>
 
 ## Nouveautés de la version 3.12
@@ -35,6 +35,22 @@ recommandations, pas de bandeaux « À regarder ensuite ».
 <p align="center">
   <img src="docs/capture-langues.png" alt="Réglages Orba : choix de la langue" width="440">
   <img src="docs/capture-arabe.png" alt="Orba en arabe, de droite à gauche" width="440">
+</p>
+
+## Version 3.11 : les thèmes
+
+Trois styles, dans Réglages Orba → *Thème*, appliqués tout de suite (l'écran de veille suit) :
+
+- **Orba** : le style sobre d'origine.
+- **Glossy** (par défaut) : verre translucide, reflets et halo cyan → violet qui respire doucement.
+- **OLED** : noir profond et ambre, sans vagues.
+
+Les noms d'applis trop longs défilent au lieu d'être coupés.
+
+<p align="center">
+  <img src="docs/capture-theme-orba.png" alt="Thème Orba" width="290">
+  <img src="docs/capture-theme-glossy.png" alt="Thème Glossy" width="290">
+  <img src="docs/capture-theme-oled.png" alt="Thème OLED" width="290">
 </p>
 
 ## Version 3.10
@@ -94,11 +110,15 @@ Chaque choix s'applique tout de suite :
 
 | Réglage | Choix |
 |---|---|
+| Thème | Orba · Glossy · OLED |
+| Langue | Automatique · Français · English · Español · Italiano · العربية |
 | Tuiles par ligne | 4, 5, 6 ou 7 |
 | Fond | Vagues animées · Vagues fixes · Noir pur (OLED) |
 | Halo de sélection | Couleur de l'appli · Cyan Orba |
 | Écran de veille | Désactivé · après 5, 10, 20 ou 30 min |
 | Voir l'écran de veille | Aperçu immédiat |
+| Au démarrage | Orba seul, ou une appli ouverte une fois à l'allumage de la télé |
+| Applis masquées | Réafficher une appli masquée |
 
 Un appui court sur la roue ouvre toujours les paramètres de la télé.
 
@@ -176,7 +196,7 @@ Désactiver le service dans *Paramètres → Système → Accessibilité*, ou d�
 
 | Télé / boîtier | Système | Statut |
 |---|---|---|
-| **Philips 65OLED908/12** | Google TV 14 | ✅ Testé au quotidien : touche Accueil, panneau Sources d'origine, écran de veille, réglages, français et anglais |
+| **Philips 65OLED908/12** | Google TV 14 | ✅ Testé au quotidien : touche Accueil, panneau Sources d'origine, écran de veille, réglages, thèmes. Les 5 langues ont été contrôlées à l'écran |
 | Autres télés et boîtiers Google TV / Android TV (Sony, TCL, Hisense, Xiaomi, NVIDIA Shield, Chromecast avec Google TV…) | Android 8.0 ou plus récent | ❔ Pas encore testé. Orba est prévu pour eux (il reconnaît les accueils d'origine `launcherx`, `tvlauncher`, `leanbacklauncher` et `com.mitv.tvhome` de Xiaomi), mais personne ne nous a encore fait de retour |
 
 *Vous utilisez Orba sur un autre modèle ? Racontez-nous dans les [Discussions](../../discussions) ou avec un
@@ -219,9 +239,11 @@ version sont dans [CHANGELOG.md](CHANGELOG.md).
 | Chemin | Rôle |
 |---|---|
 | `src/fr/maison/accueil/MainActivity.java` | Écran d'accueil : en-tête, grille, halo, menus, infos appli, réglages, fond animé |
+| `src/fr/maison/accueil/Views.java` | Thèmes et dessin : verre, halo, reflets, options de menu |
+| `src/fr/maison/accueil/Langue.java` | Langue : automatique ou choisie, droite à gauche pour l'arabe |
 | `src/fr/maison/accueil/Veille.java`, `VeilleActivity.java`, `OrbaDream.java` | Écran de veille animé (et économiseur d'écran Android) |
 | `src/fr/maison/accueil/ToucheAccueilService.java` | Service d'accessibilité : touche Accueil et remplacement de l'accueil d'origine |
-| `res/` | Icône, bannière, logo, icône Paramètres, textes EN/FR |
+| `res/` | Icône, bannière, logo, icône Paramètres, textes dans les 5 langues (`values*/strings.xml`) |
 | `assets/` | Polices Inter et Montserrat (licence OFL) |
 | `source-logo/` | Logo Orba d'origine (image et SVG) |
 | `build.ps1`, `icone.ps1`, `Logo.cs` | Construction de l'APK et génération des visuels |

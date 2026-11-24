@@ -23,7 +23,7 @@ Orba replaces the busy Google TV and Android TV home screen with a calm, readabl
 **your apps**, nothing else. No ads, no recommendations, no "Watch next" rows.
 
 <p align="center">
-  <img src="docs/demo.gif" alt="Demo: browsing Orba and opening the Sources button" width="800">
+  <img src="docs/demo.gif" alt="Demo: changing the theme, browsing Orba and opening a tile menu" width="800">
 </p>
 
 ## New in version 3.12
@@ -34,6 +34,22 @@ Orba replaces the busy Google TV and Android TV home screen with a calm, readabl
 <p align="center">
   <img src="docs/capture-langues.png" alt="Orba settings: choosing the language" width="440">
   <img src="docs/capture-arabe.png" alt="Orba in Arabic, mirrored right to left" width="440">
+</p>
+
+## Version 3.11: themes
+
+Three looks, in Orba settings → *Theme*, applied at once (the screensaver follows):
+
+- **Orba**: the plain original look.
+- **Glossy** (default): translucent glass, glossy highlights and a cyan-to-violet glow that gently breathes.
+- **OLED**: deep black and amber, without waves.
+
+Long app names scroll instead of being cut.
+
+<p align="center">
+  <img src="docs/capture-theme-orba.png" alt="Orba theme" width="290">
+  <img src="docs/capture-theme-glossy.png" alt="Glossy theme" width="290">
+  <img src="docs/capture-theme-oled.png" alt="OLED theme" width="290">
 </p>
 
 ## Version 3.10
@@ -89,11 +105,15 @@ long-press OK on any tile → *Orba settings…*. Every choice applies immediate
 
 | Setting | Options |
 |---|---|
+| Theme | Orba · Glossy · OLED |
+| Language | Automatic · Français · English · Español · Italiano · العربية |
 | Tiles per row | 4, 5, 6 or 7 |
 | Background | Animated waves · Still waves · Pure black (OLED) |
 | Selection glow | App colour · Orba cyan |
 | Screensaver | Off · after 5, 10, 20 or 30 min |
 | Preview screensaver | Instant preview |
+| On start-up | Orba only, or an app to open once after the TV starts |
+| Hidden apps | Bring a hidden app back |
 
 A short press on the gear still opens the TV's own settings.
 
@@ -171,7 +191,7 @@ Turn the service off in *Settings → System → Accessibility*, or uninstall Or
 
 | TV / box | System | Status |
 |---|---|---|
-| **Philips 65OLED908/12** | Google TV 14 | ✅ Tested every day: Home key, native Sources panel, screensaver, settings, English and French |
+| **Philips 65OLED908/12** | Google TV 14 | ✅ Tested every day: Home key, native Sources panel, screensaver, settings, themes. The 5 languages were checked on screen |
 | Other Google TV / Android TV sets and boxes (Sony, TCL, Hisense, Xiaomi, NVIDIA Shield, Chromecast with Google TV…) | Android 8.0 or later | ❔ Not tested yet. Orba is built for them (stock launchers `launcherx`, `tvlauncher`, `leanbacklauncher` and Xiaomi's `com.mitv.tvhome` are recognised), but nobody has reported back |
 
 *Using Orba on another model? Tell us how it went in [Discussions](../../discussions) or with a
@@ -214,9 +234,11 @@ Ideas, bug reports and translations are welcome: see [CONTRIBUTING.md](CONTRIBUT
 | Path | Role |
 |---|---|
 | `src/fr/maison/accueil/MainActivity.java` | Home screen: header, grid, glow, menus, app info, settings, animated background |
+| `src/fr/maison/accueil/Views.java` | Themes and drawing: glass, glow, glossy highlights, menu options |
+| `src/fr/maison/accueil/Langue.java` | Language: automatic or chosen, right-to-left for Arabic |
 | `src/fr/maison/accueil/Veille.java`, `VeilleActivity.java`, `OrbaDream.java` | Animated screensaver (and Android screensaver) |
 | `src/fr/maison/accueil/ToucheAccueilService.java` | Accessibility service: Home key and replacing the stock home screen |
-| `res/` | Icon, banner, logo, Settings icon, EN/FR strings |
+| `res/` | Icon, banner, logo, Settings icon, texts in the 5 languages (`values*/strings.xml`) |
 | `assets/` | Inter and Montserrat fonts (OFL licence) |
 | `source-logo/` | Original Orba logo (image and SVG) |
 | `build.ps1`, `icone.ps1`, `Logo.cs` | APK build and artwork generation |
